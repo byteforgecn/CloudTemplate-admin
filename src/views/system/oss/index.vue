@@ -132,7 +132,7 @@
       <el-table-column label="服务商" align="center" prop="service" sortable="custom"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" icon="Edit" @click="handleDownload(scope.row)" v-hasPermi="['system:oss:download']">修改</el-button>
+          <el-button link type="primary" icon="Edit" @click="handleDownload(scope.row)" v-hasPermi="['system:oss:download']">下载</el-button>
           <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:oss:remove']">删除</el-button>
         </template>
       </el-table-column>

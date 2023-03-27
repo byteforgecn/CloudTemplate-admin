@@ -340,7 +340,7 @@ function submitForm() {
           buttonLoading.value = false;
         });
       } else {
-        addOssConfig(this.form).then(response => {
+        addOssConfig(form.value).then(response => {
           proxy.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();
