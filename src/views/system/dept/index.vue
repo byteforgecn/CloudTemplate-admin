@@ -238,7 +238,7 @@ function handleUpdate(row) {
     listDeptExcludeChild(row.deptId).then(response => {
       deptOptions.value = proxy.handleTree(response.data, "deptId");
       if (deptOptions.value.length == 0) {
-        const noResultsOptions = { deptId: proxy.form.parentId, deptName: proxy.form.parentName, children: [] };
+        const noResultsOptions = { deptId: form.value.parentId, deptName: form.value.parentName, children: [] };
         deptOptions.value.push(noResultsOptions);
       }
     });
