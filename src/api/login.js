@@ -19,6 +19,17 @@ export function login(tenantId, username, password, code, uuid) {
   })
 }
 
+//注册开关
+export function registerEnabled() {
+  return request({
+    url: '/auth/registerEnabled',
+    headers: {
+      isToken: false
+    },
+    method: 'get'
+  })
+}
+
 // 注册方法
 export function register(data) {
   return request({
