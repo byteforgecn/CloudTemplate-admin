@@ -85,10 +85,10 @@
 
 <script setup>
 import {getCodeImg, getTenantList} from "@/api/login";
+import {registerEnabled} from "../api/login";
 import Cookies from "js-cookie";
 import {encrypt, decrypt} from "@/utils/jsencrypt";
 import useUserStore from '@/store/modules/user';
-import {registerEnabled} from "../api/login";
 
 const userStore = useUserStore();
 const router = useRouter();
