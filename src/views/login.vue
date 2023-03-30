@@ -10,7 +10,9 @@
               :label="item.companyName"
               :value="item.tenantId">
           </el-option>
-          <template #prefix><svg-icon icon-class="company" class="el-input__icon input-icon" /></template>
+          <template #prefix>
+            <svg-icon icon-class="company" class="el-input__icon input-icon"/>
+          </template>
         </el-select>
       </el-form-item>
       <el-form-item prop="username">
@@ -21,7 +23,9 @@
             auto-complete="off"
             placeholder="账号"
         >
-          <template #prefix><svg-icon icon-class="user" class="el-input__icon input-icon" /></template>
+          <template #prefix>
+            <svg-icon icon-class="user" class="el-input__icon input-icon"/>
+          </template>
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
@@ -33,7 +37,9 @@
             placeholder="密码"
             @keyup.enter="handleLogin"
         >
-          <template #prefix><svg-icon icon-class="password" class="el-input__icon input-icon" /></template>
+          <template #prefix>
+            <svg-icon icon-class="password" class="el-input__icon input-icon"/>
+          </template>
         </el-input>
       </el-form-item>
       <el-form-item prop="code" v-if="captchaEnabled">
@@ -45,7 +51,9 @@
             style="width: 63%"
             @keyup.enter="handleLogin"
         >
-          <template #prefix><svg-icon icon-class="validCode" class="el-input__icon input-icon" /></template>
+          <template #prefix>
+            <svg-icon icon-class="validCode" class="el-input__icon input-icon"/>
+          </template>
         </el-input>
         <div class="login-code">
           <img :src="codeUrl" @click="getCode" class="login-code-img"/>
@@ -76,14 +84,15 @@
 </template>
 
 <script setup>
-import { getCodeImg, getTenantList } from "@/api/login";
+import {getCodeImg, getTenantList} from "@/api/login";
 import Cookies from "js-cookie";
-import { encrypt, decrypt } from "@/utils/jsencrypt";
+import {encrypt, decrypt} from "@/utils/jsencrypt";
 import useUserStore from '@/store/modules/user';
 import {registerEnabled} from "../api/login";
+
 const userStore = useUserStore();
 const router = useRouter();
-const { proxy } = getCurrentInstance();
+const {proxy} = getCurrentInstance();
 
 const loginForm = ref({
   tenantId: "000000",
@@ -95,10 +104,10 @@ const loginForm = ref({
 });
 
 const loginRules = {
-  tenantId: [{ required: true, trigger: "blur", message: "请输入您的租户编号" }],
-  username: [{ required: true, trigger: "blur", message: "请输入您的账号" }],
-  password: [{ required: true, trigger: "blur", message: "请输入您的密码" }],
-  code: [{ required: true, trigger: "change", message: "请输入验证码" }]
+  tenantId: [{required: true, trigger: "blur", message: "请输入您的租户编号"}],
+  username: [{required: true, trigger: "blur", message: "请输入您的账号"}],
+  password: [{required: true, trigger: "blur", message: "请输入您的密码"}],
+  code: [{required: true, trigger: "change", message: "请输入验证码"}]
 };
 
 const codeUrl = ref("");
@@ -119,10 +128,10 @@ function handleLogin() {
       loading.value = true;
       // 勾选了需要记住密码设置在 cookie 中设置记住用户名和密码
       if (loginForm.value.rememberMe) {
-        Cookies.set("tenantId", loginForm.value.tenantId, { expires: 30 });
-        Cookies.set("username", loginForm.value.username, { expires: 30 });
-        Cookies.set("password", encrypt(loginForm.value.password), { expires: 30 });
-        Cookies.set("rememberMe", loginForm.value.rememberMe, { expires: 30 });
+        Cookies.set("tenantId", loginForm.value.tenantId, {expires: 30});
+        Cookies.set("username", loginForm.value.username, {expires: 30});
+        Cookies.set("password", encrypt(loginForm.value.password), {expires: 30});
+        Cookies.set("rememberMe", loginForm.value.rememberMe, {expires: 30});
       } else {
         // 否则移除
         Cookies.remove("tenantId");
@@ -132,7 +141,7 @@ function handleLogin() {
       }
       // 调用action的登录方法
       userStore.login(loginForm.value).then(() => {
-        router.push({ path: redirect.value || "/" });
+        router.push({path: redirect.value || "/"});
       }).catch(() => {
         loading.value = false;
         // 重新获取验证码
@@ -146,7 +155,7 @@ function handleLogin() {
 
 function getRegisterEnabled() {
   registerEnabled().then(res => {
-    register.value = res.data.register === undefined ? true : res.data.register;
+    register.value = res.data === undefined ? true : res.data;
   });
 }
 
@@ -185,6 +194,7 @@ function getCookie() {
     rememberMe: rememberMe === undefined ? false : Boolean(rememberMe)
   };
 }
+
 getRegisterEnabled();
 getCode();
 initTenantList();
@@ -200,6 +210,7 @@ getCookie();
   background-image: url("../assets/images/login-background.jpg");
   background-size: cover;
 }
+
 .title {
   margin: 0px auto 30px auto;
   text-align: center;
@@ -211,32 +222,39 @@ getCookie();
   background: #ffffff;
   width: 400px;
   padding: 25px 25px 5px 25px;
+
   .el-input {
     height: 40px;
+
     input {
       height: 40px;
     }
   }
+
   .input-icon {
     height: 39px;
     width: 14px;
     margin-left: 0px;
   }
 }
+
 .login-tip {
   font-size: 13px;
   text-align: center;
   color: #bfbfbf;
 }
+
 .login-code {
   width: 33%;
   height: 40px;
   float: right;
+
   img {
     cursor: pointer;
     vertical-align: middle;
   }
 }
+
 .el-login-footer {
   height: 40px;
   line-height: 40px;
@@ -249,6 +267,7 @@ getCookie();
   font-size: 12px;
   letter-spacing: 1px;
 }
+
 .login-code-img {
   height: 40px;
   padding-left: 12px;
