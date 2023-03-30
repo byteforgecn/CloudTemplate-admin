@@ -2,7 +2,7 @@
   <div class="login">
     <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
       <h3 class="title">RuoYi-Vue-Plus多租户管理系统</h3>
-      <el-form-item prop="tenantId">
+      <el-form-item prop="tenantId" v-if="tenantEnabled">
         <el-select v-model="loginForm.tenantId" filterable placeholder="请选择/输入公司名称" style="width: 100%">
           <el-option
               v-for="item in tenantList"
@@ -110,6 +110,8 @@ const register = ref(false);
 const redirect = ref(undefined);
 // 租户列表
 const tenantList = ref([]);
+// 租户开关
+const tenantEnabled = ref(true);
 
 function handleLogin() {
   proxy.$refs.loginRef.validate(valid => {
@@ -154,9 +156,13 @@ function getCode() {
 
 function initTenantList() {
   getTenantList().then(res => {
-    tenantList.value = res.data;
-    if (tenantList.value != null && tenantList.value.length !== 0) {
-      loginForm.value.tenantId = tenantList.value[0].tenantId;
+    const vo = res.data;
+    tenantEnabled.value = vo.tenantEnabled === undefined ? true : vo.tenantEnabled;
+    if (tenantEnabled.value) {
+      tenantList.value = vo.voList;
+      if (tenantList.value != null && tenantList.value.length !== 0) {
+        loginForm.value.tenantId = tenantList.value[0].tenantId;
+      }
     }
   });
 }

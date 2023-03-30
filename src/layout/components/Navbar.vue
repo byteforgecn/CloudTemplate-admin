@@ -11,7 +11,7 @@
                    filterable
                    reserve-keyword
                    placeholder="请选择租户"
-                   v-if="userId === 1"
+                   v-if="userId === 1 && tenantEnabled"
                    @change="dynamicTenantEvent"
                    @clear="dynamicClearEvent">
           <el-option
@@ -91,6 +91,8 @@ const companyName = ref(undefined);
 const tenantList = ref([]);
 // 是否切换了租户
 const dynamic = ref(false);
+// 租户开关
+const tenantEnabled = ref(true);
 
 // 动态切换
 function dynamicTenantEvent(tenantId) {
@@ -114,7 +116,11 @@ function dynamicClearEvent() {
 // 租户列表
 function initTenantList() {
   getTenantList().then(res => {
-    tenantList.value = res.data;
+    const vo = res.data;
+    tenantEnabled.value = vo.tenantEnabled === undefined ? true : vo.tenantEnabled;
+    if (tenantEnabled.value) {
+        tenantList.value = vo.voList;
+    }
   });
 }
 
