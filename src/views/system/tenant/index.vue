@@ -155,8 +155,11 @@
         <el-form-item label="用户数量" prop="accountCount">
           <el-input v-model="form.accountCount" placeholder="请输入用户数量" />
         </el-form-item>
-        <el-form-item label="地址" prop="address">
-          <el-input v-model="form.address" placeholder="请输入地址" />
+        <el-form-item label="绑定域名" prop="domain">
+            <el-input v-model="form.domain" placeholder="请输入绑定域名" />
+        </el-form-item>
+        <el-form-item label="企业地址" prop="address">
+            <el-input v-model="form.address" placeholder="请输入企业地址" />
         </el-form-item>
         <el-form-item label="企业代码" prop="licenseNumber">
           <el-input v-model="form.licenseNumber" placeholder="请输入统一社会信用代码" />
@@ -290,6 +293,7 @@ function reset() {
     password: undefined,
     companyName: undefined,
     licenseNumber: undefined,
+    domain: undefined,
     address: undefined,
     intro: undefined,
     remark: undefined,
