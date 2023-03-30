@@ -84,8 +84,7 @@
 </template>
 
 <script setup>
-import {getCodeImg, getTenantList} from "@/api/login";
-import {registerEnabled} from "../api/login";
+import {getCodeImg, getTenantList,registerEnabled} from "@/api/login";
 import Cookies from "js-cookie";
 import {encrypt, decrypt} from "@/utils/jsencrypt";
 import useUserStore from '@/store/modules/user';
