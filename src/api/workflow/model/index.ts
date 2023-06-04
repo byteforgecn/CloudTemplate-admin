@@ -29,11 +29,23 @@ export const addModel = (data: Object) => {
 /**
  * 按id删除模型
  * @param {模型id} id
- * @returns
+ * @returns {*}
  */
-export function delModel(id:Object) {
+export function delModel(id: Object) {
   return request({
     url: '/workflow/model/' + id,
     method: 'delete'
   })
 }
+
+/**
+ * 模型部署
+ * @param {模型id} id
+ * @returns {*}
+ */
+export const modelDeploy = (id: String) => {
+  return request({
+    url: `/workflow/model/modelDeploy/${id}`,
+    method: 'post'
+  });
+};

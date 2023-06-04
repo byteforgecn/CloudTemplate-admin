@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import { listModel, addModel, delModel } from '@/api/workflow/model';
+import { listModel, addModel, delModel, modelDeploy } from '@/api/workflow/model';
 import design from './design';
 export default {
   name: 'Model', // 和对应路由表中配置的name值一致
@@ -141,6 +141,9 @@ export default {
     },
     /** 重置按钮操作 */
     resetQuery() {
+      this.queryParams = {}
+      this.queryParams.pageNum = 1;
+      this.queryParams.pageSize = 10;
       this.handleQuery();
     },
     // 多选框选中数据
@@ -182,7 +185,7 @@ export default {
         .confirm('是否部署模型key为【' + key + '】流程？')
         .then(() => {
           this.loading = true;
-          return deploy(id);
+          return modelDeploy(id);
         })
         .then(() => {
           this.loading = false;
@@ -235,7 +238,7 @@ export default {
     },
     // 导出流程模型
     clickExportZip(data) {
-      this.$download.zip('/workflow/model/export/zip/' + data.id, data.name + '-' + data.key + '-' + data.category);
+      this.$download.zip('/workflow/model/export/zip/' + data.id, data.name + '-' + data.key);
     }
   }
 };
