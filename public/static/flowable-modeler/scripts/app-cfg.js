@@ -16,13 +16,13 @@
 'use strict';
 
 var FLOWABLE = FLOWABLE || {};
-
 var pathname = window.location.pathname.replace(/^(\/[^\/]*)(\/.*)?modeler\/?$/, '$1').replace(/\/$/, '');
+const baseURL = window.parent.this.apiUrl;
 
 FLOWABLE.CONFIG = {
 	'onPremise' : true,
-	'contextRoot' : 'http://127.0.0.1:8080/workflow/model',
-	'contextModelerRestRoot' : 'http://127.0.0.1:8080/workflow/model',
-	'webContextRoot' : 'http://127.0.0.1:8080/workflow/model',
+	'contextRoot' : baseURL+'/workflow/model',
+	'contextModelerRestRoot' : baseURL+'/workflow/model',
+	'webContextRoot' : baseURL+'/workflow/model',
 	'datesLocalization' : false
 };

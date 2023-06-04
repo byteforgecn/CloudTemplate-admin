@@ -21,7 +21,7 @@ FLOWABLE.APP_URL = {
     /* ACCOUNT URLS */
 
     getAccountUrl: function () {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/account';
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/account?Authorization=Bearer '+window.parent.this.token;
     },
 
     getLogoutUrl: function () {
@@ -35,19 +35,19 @@ FLOWABLE.APP_URL = {
     },
 
     getModelUrl: function (modelId) {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId;
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId+'?Authorization=Bearer '+window.parent.this.token;
     },
 
     getModelModelJsonUrl: function (modelId) {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId + '/model-json';
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId + '/model-json?Authorization=Bearer '+window.parent.this.token;
     },
 
     getModelBpmn20ExportUrl: function (modelId) {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId + '/bpmn20?version=' + Date.now();
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId + '/bpmn20?version=' + Date.now()+'&Authorization=Bearer '+window.parent.this.token;
     },
 
     getCloneModelsUrl: function (modelId) {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId + '/clone';
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId + '/clone'+'?Authorization=Bearer '+window.parent.this.token;
     },
 
     getModelHistoriesUrl: function (modelId) {

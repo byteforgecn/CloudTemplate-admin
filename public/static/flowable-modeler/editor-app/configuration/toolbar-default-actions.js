@@ -411,6 +411,11 @@ angular.module('flowableModeler').controller('SaveModelCtrl', [ '$rootScope', '$
             url: FLOWABLE.URL.putModel(modelMetaData.modelId)})
 
             .success(function (data, status, headers, config) {
+                if(data.code === 500){
+                    alert(data.msg)
+                    $scope.status.loading = false;
+                    return false
+                }
                 editorManager.handleEvents({
                     type: ORYX.CONFIG.EVENT_SAVED
                 });

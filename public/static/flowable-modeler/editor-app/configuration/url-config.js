@@ -15,27 +15,27 @@ var FLOWABLE = FLOWABLE || {};
 FLOWABLE.URL = {
 
     getModel: function(modelId) {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId + '/editor/json?version=' + Date.now();
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId + '/editor/json?version=' + Date.now()+'&Authorization=Bearer '+window.parent.this.token;
     },
 
     getStencilSet: function() {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/stencil-sets/editor?version=' + Date.now();
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/stencil-sets/editor?version=' + Date.now()+'&Authorization=Bearer '+window.parent.this.token;
     },
     
     getCmmnStencilSet: function() {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/stencil-sets/cmmneditor?version=' + Date.now();
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/stencil-sets/cmmneditor?version=' + Date.now()+'&Authorization=Bearer '+window.parent.this.token;
     },
 
     getDmnStencilSet: function() {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/stencil-sets/dmneditor?version=' + Date.now();
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/stencil-sets/dmneditor?version=' + Date.now()+'&Authorization=Bearer '+window.parent.this.token;
     },
 
 
     putModel: function(modelId) {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId + '/editor/json';
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId + '/editor/json'+'?Authorization=Bearer '+window.parent.this.token;
     },
     
     validateModel: function(){
-		return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/model/validate';
+		return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/model/validate'+'?Authorization=Bearer '+window.parent.this.token;
     }
 };

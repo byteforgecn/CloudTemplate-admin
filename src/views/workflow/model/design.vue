@@ -7,7 +7,9 @@
   </el-dialog>
 </template>
   
-  <script>
+<script>
+const baseURL = import.meta.env.VITE_APP_BASE_API;
+import { getToken } from '@/utils/auth';
 export default {
   props: {
     modelId: String
@@ -21,14 +23,24 @@ export default {
   computed: {
     src() {
       return `/static/flowable-modeler/index.html#/editor/${this.modelId}`;
+    },
+    apiUrl() {
+      return baseURL;
+    },
+    token() {
+      return getToken();
     }
+  },
+  mounted(){
+      //全局存入当前vue实例
+      window.this = this;
   },
   methods: {
     handleClose() {
       this.$modal
         .confirm('请记得点击左上角保存按钮，确定关闭设计窗口?', '确认关闭')
         .then(() => {
-          this.visible = false
+          this.visible = false;
           // 刷新数据
           this.$parent.getList();
         })
@@ -39,7 +51,7 @@ export default {
   }
 };
 </script>
-  <style scoped>
+<style scoped>
 .iframe {
   width: 100%;
   height: calc(100vh - 120px);
