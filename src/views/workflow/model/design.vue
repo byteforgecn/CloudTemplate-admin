@@ -1,12 +1,11 @@
-
 <template>
-  <el-dialog title="Flowable工作流在线流程设计器" v-model="visible" v-if="visible" :before-close="handleClose" fullscreen>
+  <el-dialog title="Flowable工作流在线流程设计器" width="90%" height="100%" v-model="visible" v-if="visible" :before-close="handleClose">
     <div class="modeler">
       <iframe class="iframe" :src="src"></iframe>
     </div>
   </el-dialog>
 </template>
-  
+
 <script>
 const baseURL = import.meta.env.VITE_APP_BASE_API;
 import { getToken } from '@/utils/auth';
@@ -58,4 +57,3 @@ export default {
   border: 0px;
 }
 </style>
-  
