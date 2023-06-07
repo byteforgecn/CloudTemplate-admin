@@ -251,15 +251,15 @@ FLOWABLE.APP_URL = {
     /* OTHER URLS */
 
     getEditorUsersUrl: function () {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/editor-users';
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/editor-users?Authorization=Bearer '+window.parent.this.token;
     },
 
     getEditorGroupsUrl: function () {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/editor-groups';
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/editor-groups?Authorization=Bearer '+window.parent.this.token;
     },
 
     getAboutInfoUrl: function () {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/about-info';
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/about-info?Authorization=Bearer '+window.parent.this.token;
     }
 
 };
