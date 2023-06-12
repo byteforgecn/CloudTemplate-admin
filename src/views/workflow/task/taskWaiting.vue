@@ -34,19 +34,25 @@
         <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-row :gutter="10" class="mb8">
-           
+              <el-col :span="1.5">
+                <el-button type="text" size="small" icon="el-icon-thumb" @click="approvalRecord(scope.row)">审批记录</el-button>
+              </el-col>
             </el-row>
           </template>
         </el-table-column>
       </el-table>
       <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
+    <approvalRecord ref="approvalRecordRef" :processInstanceId="processInstanceId"/>
   </div>
 </template>
 
-<script lang="ts" setup name="Model">
+<script lang="ts" setup>
 import { getTaskWaitByPage } from '@/api/workflow/task';
 import { ComponentInternalInstance } from 'vue';
+import ApprovalRecord from '@/components/Process/approvalRecord.vue';
+
+const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 // 遮罩层
@@ -69,10 +75,19 @@ const queryParams = ref<Record<string, any>>({
   pageSize: 10,
   name: undefined
 });
+const processInstanceId = ref<string>('')
 
 onMounted(() => {
   getList();
 });
+const approvalRecord = (row: any) => {
+  if (approvalRecordRef.value) {
+    processInstanceId.value = row.processInstanceId
+    approvalRecordRef.value.visible = true
+    console.log(processInstanceId.value)
+    console.log(approvalRecordRef.value.visible)
+  }
+}
 /** 搜索按钮操作 */
 const handleQuery = () => {
   queryParams.value.pageNum = 1;
