@@ -41,7 +41,7 @@ export default {
         .then(() => {
           this.visible = false;
           // 刷新数据
-          this.$parent.getList();
+          this.$emit("handleClose")
         })
         .finally(() => {
           this.loading = false;

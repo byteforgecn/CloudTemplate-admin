@@ -68,7 +68,7 @@
       <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
     <!-- 设计流程开始 -->
-    <design ref="designModel" :modelId="modelId" />
+    <design ref="designModel" :modelId="modelId" @handleClose="getList"/>
     <!-- 设计流程结束 -->
     <!-- 添加模型对话框 -->
     <el-dialog v-model="open" v-if="open" title="新增模型" width="650px" append-to-body :close-on-click-modal="false">
