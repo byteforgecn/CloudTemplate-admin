@@ -6,7 +6,7 @@
   </el-dialog>
 </template>
 
-<script>
+<script lang="ts">
 const baseURL = import.meta.env.VITE_APP_BASE_API;
 import { getToken } from '@/utils/auth';
 export default {

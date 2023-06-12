@@ -1,22 +1,24 @@
 <template>
   <div class="p-2">
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div class="search" v-show="showSearch">
-        <el-form :model="queryParams" ref="queryFormRef" :inline="true" v-show="showSearch" label-width="68px">
-          <el-form-item label="模型名称" prop="name">
-            <el-input v-model="queryParams.name" placeholder="请输入模型名称" clearable @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="标识Key" prop="key">
-            <el-input v-model="queryParams.key" placeholder="请输入标识Key" clearable @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-          </el-form-item>
-        </el-form>
+      <div class="mb-[10px]" v-show="showSearch">
+        <el-card shadow="hover">
+          <el-form :model="queryParams" ref="queryFormRef" :inline="true" v-show="showSearch" label-width="68px">
+            <el-form-item label="模型名称" prop="name">
+              <el-input v-model="queryParams.name" placeholder="请输入模型名称" clearable @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="标识Key" prop="key">
+              <el-input v-model="queryParams.key" placeholder="请输入标识Key" clearable @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
       </div>
     </transition>
-    <el-card shadow="never">
+    <el-card shadow="hover">
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
@@ -35,7 +37,7 @@
         <el-table-column fixed align="center" prop="name" label="模型名称"></el-table-column>
         <el-table-column align="center" prop="key" label="标识Key"></el-table-column>
         <el-table-column align="center" prop="version" label="版本号" width="90">
-          <template #default="scope"> v{{scope.row.version}}.0</template>
+          <template #default="scope"> v{{ scope.row.version }}.0</template>
         </el-table-column>
         <el-table-column align="center" prop="metaInfo" label="备注说明" min-width="130"></el-table-column>
         <el-table-column align="center" prop="createTime" label="创建时间" width="160"></el-table-column>
@@ -52,9 +54,9 @@
             </el-row>
             <el-row :gutter="10" class="mb8">
               <el-col :span="1.5">
-                <el-button type="text" size="small" icon="el-icon-c-scale-to-original" @click="clickDeploy(scope.row.id,scope.row.key)"
-                  >流程部署</el-button
-                >
+                <el-button type="text" size="small" icon="el-icon-c-scale-to-original" @click="clickDeploy(scope.row.id, scope.row.key)">
+                  流程部署
+                </el-button>
               </el-col>
               <el-col :span="1.5">
                 <el-button type="text" size="small" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
@@ -63,14 +65,14 @@
           </template>
         </el-table-column>
       </el-table>
-      <pagination v-show="total>0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
+      <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
     <!-- 设计流程开始 -->
     <design ref="designModel" :modelId="modelId" />
     <!-- 设计流程结束 -->
     <!-- 添加模型对话框 -->
     <el-dialog v-model="open" v-if="open" title="新增模型" width="650px" append-to-body :close-on-click-modal="false">
-      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="模型名称：" prop="name">
           <el-input v-model="form.name" maxlength="20" show-word-limit />
         </el-form-item>
@@ -91,155 +93,135 @@
   </div>
 </template>
 
-<script>
+<script lang="ts" setup name="Model">
 import { listModel, addModel, delModel, modelDeploy } from '@/api/workflow/model';
-import design from './design';
-export default {
-  name: 'Model', // 和对应路由表中配置的name值一致
-  components: { design },
-  data() {
-    return {
-      // 按钮loading
-      buttonLoading: false,
-      // 遮罩层
-      loading: true,
-      // 导出遮罩层
-      exportLoading: false,
-      // 选中数组
-      ids: [],
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
-      // 显示搜索条件
-      showSearch: true,
-      // 总条数
-      total: 0,
-      // 模型定义表格数据
-      modelList: [],
-      // 查询参数
-      queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        name: undefined,
-        key: undefined
-      },
-      modelId: null, //
-      //模型表单
-      form: {},
-      open: false
-    };
-  },
-  created() {
-    this.getList();
-  },
-  methods: {
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
-    },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.queryParams = {}
-      this.queryParams.pageNum = 1;
-      this.queryParams.pageSize = 10;
-      this.handleQuery();
-    },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.id);
-      this.single = selection.length !== 1;
-      this.multiple = !selection.length;
-    },
-    //分页
-    getList() {
-      this.loading = true;
-      listModel(this.queryParams).then((response) => {
-        this.modelList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal
-        .confirm('是否确认删除模型id为"' + ids + '"的数据项？')
-        .then(() => {
-          this.loading = true;
-          return delModel(ids);
-        })
-        .then(() => {
-          this.loading = false;
-          this.getList();
-          this.$modal.msgSuccess('删除成功');
-        })
-        .finally(() => {
-          this.loading = false;
-        });
-    },
-    // 流程部署
-    clickDeploy(id, key) {
-      this.$modal
-        .confirm('是否部署模型key为【' + key + '】流程？')
-        .then(() => {
-          this.loading = true;
-          return modelDeploy(id);
-        })
-        .then(() => {
-          this.loading = false;
-          this.getList();
-          this.$modal.msgSuccess('部署成功');
-        })
-        .finally(() => {
-          this.loading = false;
-        });
-    },
-    handleAdd() {
-      this.form = {};
-      this.open = true;
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs['form'].validate((valid) => {
-        if (valid) {
-          this.buttonLoading = true;
-          addModel(this.form).then((response) => {
-            this.$modal.msgSuccess('新增成功');
-            this.open = false;
-            this.getList();
-          });
-        }
-      });
-    },
-    // 打开设计流程
-    clickDesign(id) {
-      this.modelId = id;
-      this.$refs.designModel.visible = true;
-    },
-    // 关闭设计流程
-    closeBpmn() {
-      this.getList();
-      this.$refs.designModel.visible = false;
-    },
-    handleClose() {
-      this.$confirm('请记得点击保存按钮，确定关闭设计窗口?', '确认关闭', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
-        .then(() => {
-          this.$refs.designModel.visible = false;
-          // 刷新数据
-          this.getList();
-        })
-        .catch(() => {});
-    },
-    // 导出流程模型
-    clickExportZip(data) {
-      this.$download.zip('/workflow/model/export/zip/' + data.id, data.name + '-' + data.key);
+import Design from "./design.vue";
+import { ComponentInternalInstance } from "vue";
+
+const { proxy } = getCurrentInstance() as ComponentInternalInstance
+
+const designModel = ref<InstanceType<typeof Design>>();
+const formRef = ref(ElForm);
+
+// 按钮loading
+const buttonLoading = ref(false);
+// 遮罩层
+const loading = ref(true)
+// 导出遮罩层
+const exportLoading = ref(false)
+// 选中数组
+const ids = ref<Array<any>>([])
+// 非单个禁用
+const single = ref(true)
+// 非多个禁用
+const multiple = ref(true)
+// 显示搜索条件
+const showSearch = ref(true);
+// 总条数
+const total = ref(0);
+// 模型定义表格数据
+const modelList = ref([]);
+// 查询参数
+const queryParams = ref<Record<string, any>>({
+  pageNum: 1,
+  pageSize: 10,
+  name: undefined,
+  key: undefined
+});
+const modelId = ref<string>('')
+//模型表单
+const form = ref<Record<string, any>>({})
+const open = ref(false)
+
+const rules = ref();
+
+onMounted(() => {
+  getList();
+});
+/** 搜索按钮操作 */
+const handleQuery = () => {
+  queryParams.value.pageNum = 1;
+  getList();
+};
+/** 重置按钮操作 */
+const resetQuery = () => {
+  queryParams.value = {}
+  queryParams.value.pageNum = 1;
+  queryParams.value.pageSize = 10;
+  handleQuery();
+}
+// 多选框选中数据
+const handleSelectionChange = (selection: any) => {
+  ids.value = selection.map((item: any) => item.id);
+  single.value = selection.length !== 1;
+  multiple.value = !selection.length;
+}
+//分页
+const getList = () => {
+  loading.value = true;
+  listModel(queryParams.value).then((resp) => {
+    modelList.value = resp.rows;
+    total.value = resp.total;
+    loading.value = false;
+  });
+}
+/** 删除按钮操作 */
+const handleDelete = async (row: any) => {
+  const id = row.id || ids;
+  await proxy?.$modal.confirm('是否确认删除模型id为"' + id + '"的数据项？');
+  loading.value = true;
+  await delModel(id).finally(() => loading.value = false);
+  getList();
+  proxy?.$modal.msgSuccess('删除成功');
+};
+// 流程部署
+const clickDeploy = async (id: string, key: string) => {
+  await proxy?.$modal.confirm('是否部署模型key为【' + key + '】流程？');
+  loading.value = true;
+  await modelDeploy(id).finally(() => loading.value = false);
+  getList();
+  proxy?.$modal.msgSuccess('部署成功');
+};
+const handleAdd = () => {
+  form.value = {};
+  open.value = true;
+};
+/** 提交按钮 */
+const submitForm = () => {
+  formRef.value.validate(async (valid: boolean) => {
+    if (valid) {
+      buttonLoading.value = true;
+      await addModel(form.value);
+      proxy?.$modal.msgSuccess('新增成功');
+      open.value = false;
+      getList();
     }
+  });
+};
+// 打开设计流程
+const clickDesign = (id: string) => {
+  modelId.value = id;
+  if (designModel.value) {
+    designModel.value.visible = true;
   }
+};
+// 关闭设计流程
+const closeBpmn = () => {
+  getList();
+  if (designModel.value) {
+    designModel.value.visible = false;
+  }
+};
+const handleClose = async () => {
+  await proxy?.$modal.confirm('请记得点击保存按钮，确定关闭设计窗口?');
+  if (designModel.value) {
+    designModel.value.visible = false;
+  }
+  // 刷新数据
+  getList();
+};
+// 导出流程模型
+const clickExportZip = (data: any) => {
+  proxy?.$download.zip('/workflow/model/export/zip/' + data.id, data.name + '-' + data.key);
 };
 </script>

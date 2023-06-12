@@ -5,7 +5,7 @@ import request from '@/utils/request';
  * @param query
  * @returns {*}
  */
-export const listModel = (query: Object) => {
+export const listModel = (query: object) => {
   return request({
     url: '/workflow/model/list',
     method: 'get',
@@ -18,7 +18,7 @@ export const listModel = (query: Object) => {
  * @param query
  * @returns {*}
  */
-export const addModel = (data: Object) => {
+export const addModel = (data: object) => {
   return request({
     url: '/workflow/model/rest/models',
     method: 'post',
@@ -31,11 +31,11 @@ export const addModel = (data: Object) => {
  * @param {模型id} id
  * @returns {*}
  */
-export function delModel(id: Object) {
+export function delModel(id: object) {
   return request({
     url: '/workflow/model/' + id,
     method: 'delete'
-  })
+  });
 }
 
 /**
@@ -43,7 +43,7 @@ export function delModel(id: Object) {
  * @param {模型id} id
  * @returns {*}
  */
-export const modelDeploy = (id: String) => {
+export const modelDeploy = (id: string) => {
   return request({
     url: `/workflow/model/modelDeploy/${id}`,
     method: 'post'
