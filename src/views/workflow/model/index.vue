@@ -107,8 +107,6 @@ const formRef = ref(ElForm);
 const buttonLoading = ref(false);
 // 遮罩层
 const loading = ref(true)
-// 导出遮罩层
-const exportLoading = ref(false)
 // 选中数组
 const ids = ref<Array<any>>([])
 // 非单个禁用
@@ -204,21 +202,6 @@ const clickDesign = (id: string) => {
   if (designModel.value) {
     designModel.value.visible = true;
   }
-};
-// 关闭设计流程
-const closeBpmn = () => {
-  getList();
-  if (designModel.value) {
-    designModel.value.visible = false;
-  }
-};
-const handleClose = async () => {
-  await proxy?.$modal.confirm('请记得点击保存按钮，确定关闭设计窗口?');
-  if (designModel.value) {
-    designModel.value.visible = false;
-  }
-  // 刷新数据
-  getList();
 };
 // 导出流程模型
 const clickExportZip = (data: any) => {
