@@ -22,10 +22,10 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button type="primary" plain icon="Plus" size="mini" @click="handleAdd">新增</el-button>
+            <el-button type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="danger" plain icon="Delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
+            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete">删除</el-button>
           </el-col>
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
@@ -42,24 +42,24 @@
         <el-table-column align="center" prop="metaInfo" label="备注说明" min-width="130"></el-table-column>
         <el-table-column align="center" prop="createTime" label="创建时间" width="160"></el-table-column>
         <el-table-column align="center" prop="lastUpdateTime" label="更新时间" width="160"></el-table-column>
-        <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
+        <el-table-column fixed="right" label="操作" align="center" width="160" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-row :gutter="10" class="mb8">
               <el-col :span="1.5">
-                <el-button type="text" size="small" icon="el-icon-thumb" @click="clickDesign(scope.row.id)">设计流程</el-button>
+                <el-button link type="primary" icon="el-icon-thumb" @click="clickDesign(scope.row.id)">设计流程</el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button type="text" size="small" icon="el-icon-download" @click="clickExportZip(scope.row)">导出</el-button>
+                <el-button link type="primary" icon="el-icon-download" @click="clickExportZip(scope.row)">导出</el-button>
               </el-col>
             </el-row>
             <el-row :gutter="10" class="mb8">
               <el-col :span="1.5">
-                <el-button type="text" size="small" icon="el-icon-c-scale-to-original" @click="clickDeploy(scope.row.id, scope.row.key)">
+                <el-button link type="primary" icon="el-icon-c-scale-to-original" @click="clickDeploy(scope.row.id, scope.row.key)">
                   流程部署
                 </el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button type="text" size="small" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
+                <el-button link type="primary" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
               </el-col>
             </el-row>
           </template>
@@ -68,7 +68,7 @@
       <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
     <!-- 设计流程开始 -->
-    <design ref="designModel" :modelId="modelId" @handleClose="getList"/>
+    <design ref="designModel" :modelId="modelId" @handleClose="getList" />
     <!-- 设计流程结束 -->
     <!-- 添加模型对话框 -->
     <el-dialog v-model="open" v-if="open" title="新增模型" width="650px" append-to-body :close-on-click-modal="false">
