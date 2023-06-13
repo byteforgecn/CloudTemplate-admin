@@ -30,22 +30,16 @@ export default {
       return getToken();
     }
   },
-  mounted(){
-      //全局存入当前vue实例
-      window.this = this;
+  mounted() {
+    //全局存入当前vue实例
+    (window as any).this = this;
   },
   methods: {
-    handleClose() {
-      this.$modal
-        .confirm('请记得点击左上角保存按钮，确定关闭设计窗口?', '确认关闭')
-        .then(() => {
-          this.visible = false;
-          // 刷新数据
-          this.$emit("handleClose")
-        })
-        .finally(() => {
-          this.loading = false;
-        });
+    async handleClose() {
+      await this.$modal.confirm('请记得点击左上角保存按钮，确定关闭设计窗口?').finally(() => (this as any).loading = false);
+      this.visible = false;
+      // 刷新数据
+      this.$emit("handleClose")
     }
   }
 };
