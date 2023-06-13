@@ -71,7 +71,7 @@
     <design ref="designModel" :modelId="modelId" @handleClose="getList" />
     <!-- 设计流程结束 -->
     <!-- 添加模型对话框 -->
-    <el-dialog v-model="open" v-if="open" title="新增模型" width="650px" append-to-body :close-on-click-modal="false">
+    <el-dialog v-model="dialog.visible" :title="dialog.title" width="650px" append-to-body :close-on-click-modal="false">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="模型名称：" prop="name">
           <el-input v-model="form.name" maxlength="20" show-word-limit />
@@ -86,7 +86,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="open = false">取 消</el-button>
+          <el-button @click="cancel">取 消</el-button>
         </span>
       </template>
     </el-dialog>
@@ -95,43 +95,55 @@
 
 <script lang="ts" setup name="Model">
 import { listModel, addModel, delModel, modelDeploy } from '@/api/workflow/model';
-import Design from "./design.vue";
+import { ModelQuery, ModelForm } from '@/api/workflow/model/types';
 import { ComponentInternalInstance } from "vue";
+import Design from "./design.vue";
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance
 
 const designModel = ref<InstanceType<typeof Design>>();
 const formRef = ref(ElForm);
+const queryFormRef = ref(ElForm)
 
-// 按钮loading
 const buttonLoading = ref(false);
-// 遮罩层
 const loading = ref(true)
-// 选中数组
-const ids = ref<Array<any>>([])
-// 非单个禁用
+const ids = ref<Array<string | number>>([])
 const single = ref(true)
-// 非多个禁用
 const multiple = ref(true)
-// 显示搜索条件
 const showSearch = ref(true);
-// 总条数
 const total = ref(0);
-// 模型定义表格数据
-const modelList = ref([]);
-// 查询参数
-const queryParams = ref<Record<string, any>>({
-  pageNum: 1,
-  pageSize: 10,
-  name: undefined,
-  key: undefined
-});
-const modelId = ref<string>('')
-//模型表单
-const form = ref<Record<string, any>>({})
-const open = ref(false)
+const modelList = ref<Record<string, any>>([]);
 
-const rules = ref();
+const dialog = reactive<DialogOption>({
+  visible: false,
+  title: ''
+});
+
+const initFormData: ModelForm = {
+  name: '',
+  key: '',
+  description: ''
+}
+const data = reactive<PageData<ModelForm, ModelQuery>>({
+  form: { ...initFormData },
+  queryParams: {
+    pageNum: 1,
+    pageSize: 10,
+    name: '',
+    key: ''
+  },
+  rules: {
+    name: [
+      { required: true, message: "模型不能为空", trigger: "blur" }
+    ],
+    key: [
+      { required: true, message: "key不能为空", trigger: "blur" }
+    ]
+  }
+})
+const { queryParams, form, rules } = toRefs(data);
+
+const modelId = ref<string>('')
 
 onMounted(() => {
   getList();
@@ -143,7 +155,7 @@ const handleQuery = () => {
 };
 /** 重置按钮操作 */
 const resetQuery = () => {
-  queryParams.value = {}
+  queryFormRef.value.resetFields();
   queryParams.value.pageNum = 1;
   queryParams.value.pageSize = 10;
   handleQuery();
@@ -181,8 +193,9 @@ const clickDeploy = async (id: string, key: string) => {
   proxy?.$modal.msgSuccess('部署成功');
 };
 const handleAdd = () => {
-  form.value = {};
-  open.value = true;
+  form.value = { ...initFormData };
+  dialog.visible = true;
+  dialog.title = '新增模型';
 };
 /** 提交按钮 */
 const submitForm = () => {
@@ -191,11 +204,24 @@ const submitForm = () => {
       buttonLoading.value = true;
       await addModel(form.value);
       proxy?.$modal.msgSuccess('新增成功');
-      open.value = false;
+      dialog.visible = false;
       getList();
     }
   });
 };
+
+/** 取消按钮 */
+const cancel = () => {
+  reset();
+  dialog.visible = false;
+}
+
+/** 表单重置 */
+const reset = () => {
+  form.value = {...initFormData};
+  formRef.value.resetFields();
+}
+
 // 打开设计流程
 const clickDesign = (id: string) => {
   modelId.value = id;
