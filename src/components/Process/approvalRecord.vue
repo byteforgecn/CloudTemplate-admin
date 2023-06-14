@@ -39,7 +39,8 @@ export default {
       loading:false,
       src:"",
       visible:false,
-      historyList:[]
+      historyList:[],
+      graphicInfoVos:[]
     };
   },
   methods: {
@@ -48,7 +49,8 @@ export default {
       this.loading = true
       this.src = getHistoryProcessImage(processInstanceId)
       getHistoryRecord(processInstanceId).then(response => {
-          this.historyList = response.data
+          this.historyList = response.data.historyRecordList
+          this.graphicInfoVos = response.data.graphicInfoVos
           this.loading = false
       })
     }
