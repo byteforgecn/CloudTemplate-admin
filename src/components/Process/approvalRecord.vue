@@ -11,7 +11,6 @@
            top: `${graphic.y}px`,
            width: `${graphic.width}px`,
            height: `${graphic.height}px`,
-           color: 'red',
            cursor: 'pointer',
            zIndex: 99
          }"
