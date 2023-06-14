@@ -1,11 +1,11 @@
 <template>
-  <el-dialog v-model="visible" title="审批记录" :width="width" append-to-body :close-on-click-modal="false">
+  <el-dialog v-model="visible" title="审批记录" :width="width" :height="height" append-to-body :close-on-click-modal="false">
     <div v-loading="loading">
-      <div>
-        <el-image :src="src" style="font-size: 20px; margin: 50px;"> </el-image>
+      <div style="width: 100%;height: 300px;overflow-y: auto;">
+        <el-image :src="src" />
       </div>
       <div>
-        <el-table :data="historyList" style="width: 100%" max-height="570" v-loading="loading">
+        <el-table :data="historyList" style="width: 100%" border fit max-height="570">
           <el-table-column label="流程审批历史记录" align="center">
             <el-table-column type="index" label="序号" align="center" width="50"></el-table-column>
             <el-table-column prop="name" label="任务名称" align="center"></el-table-column>
@@ -28,6 +28,10 @@ export default {
     width: {
         type:String,
         default:"70%"
+    },
+    height: {
+        type:String,
+        default:"100%"
     }
   },
   data() {

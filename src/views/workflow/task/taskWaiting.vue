@@ -27,9 +27,6 @@
         <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
         <el-table-column fixed align="center" prop="name" label="任务名称"></el-table-column>
         <el-table-column fixed align="center" prop="assignee" label="办理人"></el-table-column>
-        <el-table-column align="center" prop="version" label="版本号" width="90">
-          <template #default="scope"> v{{ scope.row.version }}.0</template>
-        </el-table-column>
         <el-table-column align="center" prop="createTime" label="创建时间" width="160"></el-table-column>
         <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
           <template #default="scope">
