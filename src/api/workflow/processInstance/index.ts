@@ -6,7 +6,7 @@ import { getToken } from '@/utils/auth';
  * 通过流程实例id获取历史流程图
  */
 export const getHistoryProcessImage = (processInstanceId: string) => {
-  return baseUrl + `/workflow/processInstance/getHistoryProcessImage/${processInstanceId}` + '?Authorization=Bearer ' + getToken();
+  return baseUrl + `/workflow/processInstance/getHistoryProcessImage/${processInstanceId}` + '?Authorization=Bearer ' + getToken()+'&t'+ Math.random()
 };
 
 /**
