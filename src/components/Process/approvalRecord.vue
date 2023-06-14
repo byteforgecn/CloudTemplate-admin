@@ -110,9 +110,9 @@ export default {
             endTime: info.endTime,
             runDuration: info.runDuration
           };
+          this.popupVisible = true;
         }
       }
-      this.popupVisible = true;
     },
     handleMouseLeave() {
       this.popupVisible = false;
