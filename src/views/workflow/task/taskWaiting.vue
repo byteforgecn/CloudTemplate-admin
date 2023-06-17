@@ -34,6 +34,9 @@
               <el-col :span="1.5">
                 <el-button type="text" size="small" icon="el-icon-thumb" @click="handleApprovalRecord(scope.row)">审批记录</el-button>
               </el-col>
+              <el-col :span="1.5">
+                <el-button type="text" size="small" icon="el-icon-thumb" @click="handleCompleteTask(scope.row.id)">办理</el-button>
+              </el-col>
             </el-row>
           </template>
         </el-table-column>
@@ -46,7 +49,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getTaskWaitByPage } from '@/api/workflow/task';
+import { getTaskWaitByPage, completeTask } from '@/api/workflow/task';
 import { ComponentInternalInstance } from 'vue';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 //审批记录组件
@@ -108,5 +111,15 @@ const getList = () => {
     total.value = resp.total;
     loading.value = false;
   });
+};
+/** 办理流程 */
+const handleCompleteTask = async (taskId: string) => {
+  await proxy?.$modal.confirm('是否确认办理流程？');
+  let param = {
+    taskId: taskId
+  };
+  await completeTask(param).finally(() => (loading.value = false));
+  getList();
+  proxy?.$modal.msgSuccess('操作成功');
 };
 </script>

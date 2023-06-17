@@ -26,3 +26,30 @@ export const getTaskFinishByPage = (query: object) => {
   });
 };
 
+/**
+ * 启动流程
+ * @param data
+ * @returns {*}
+ */
+export const startWorkFlow = (data: object) => {
+  return request({
+    url: '/workflow/task/startWorkFlow',
+    method: 'post',
+    data: data
+  });
+};
+
+/**
+ * 办理流程
+ * @param data
+ * @returns {*}
+ */
+export const completeTask = (data: object) => {
+  return request({
+    url: '/workflow/task/completeTask',
+    method: 'post',
+    data: data
+  });
+};
+
+

@@ -42,24 +42,24 @@
         <el-table-column align="center" prop="metaInfo" label="备注说明" min-width="130"></el-table-column>
         <el-table-column align="center" prop="createTime" label="创建时间" width="160"></el-table-column>
         <el-table-column align="center" prop="lastUpdateTime" label="更新时间" width="160"></el-table-column>
-        <el-table-column fixed="right" label="操作" align="center" width="160" class-name="small-padding fixed-width">
+        <el-table-column fixed="right" label="操作" align="center" width="180" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-row :gutter="10" class="mb8">
               <el-col :span="1.5">
-                <el-button link type="primary" icon="el-icon-thumb" @click="clickDesign(scope.row.id)">设计流程</el-button>
+                <el-button link type="primary" icon="Pointer" @click="clickDesign(scope.row.id)">设计流程</el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button link type="primary" icon="el-icon-download" @click="clickExportZip(scope.row)">导出</el-button>
+                <el-button link type="primary" icon="Download" @click="clickExportZip(scope.row)">导出</el-button>
               </el-col>
             </el-row>
             <el-row :gutter="10" class="mb8">
               <el-col :span="1.5">
-                <el-button link type="primary" icon="el-icon-c-scale-to-original" @click="clickDeploy(scope.row.id, scope.row.key)">
+                <el-button link type="primary" icon="ScaleToOriginal" @click="clickDeploy(scope.row.id, scope.row.key)">
                   流程部署
                 </el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button link type="primary" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
+                <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
               </el-col>
             </el-row>
           </template>

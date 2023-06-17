@@ -1,7 +1,7 @@
 <template>
-  <el-dialog v-model="visible" title="审批记录" :width="width" :height="height" append-to-body :close-on-click-modal="false">
+  <el-dialog v-model="visible" draggable title="审批记录" :width="width" :height="height" append-to-body :close-on-click-modal="false">
     <div v-loading="loading">
-      <div style="width: 100%;height: 300px;overflow-y: auto;position: relative;">
+      <div style="width: 100%;height: 300px;overflow: auto;position: relative;">
         <div
           v-for="(graphic, index) in graphicInfoVos"
           :key="index"
@@ -20,12 +20,12 @@
         <!-- 弹出的 div 元素 -->
         <div
           v-show="popupVisible"
+          class="triangle"
           :style="{ 
               position: 'absolute',
               left: `${graphicX}px`,
               top: `${graphicY}px`,
               backgroundColor: '#fff',
-              border: '1px solid #ccc',
               padding: '10px',
               zIndex: 100
             }"
@@ -42,13 +42,13 @@
         <el-table :data="historyList" style="width: 100%" border fit max-height="570">
           <el-table-column label="流程审批历史记录" align="center">
             <el-table-column type="index" label="序号" align="center" width="50"></el-table-column>
-            <el-table-column prop="name" label="任务名称" align="center"></el-table-column>
-            <el-table-column prop="nickName" label="办理人" align="center"></el-table-column>
-            <el-table-column prop="status" label="状态" align="center"></el-table-column>
-            <el-table-column prop="comment" label="审批意见" align="center"></el-table-column>
-            <el-table-column prop="startTime" label="开始时间" align="center"></el-table-column>
-            <el-table-column prop="endTime" label="结束时间" align="center"></el-table-column>
-            <el-table-column prop="runDuration" label="运行时长" align="center"></el-table-column>
+            <el-table-column prop="name" label="任务名称" sortable align="center"></el-table-column>
+            <el-table-column prop="nickName" label="办理人" sortable align="center"></el-table-column>
+            <el-table-column prop="status" label="状态" sortable align="center"></el-table-column>
+            <el-table-column prop="comment" label="审批意见" sortable align="center"></el-table-column>
+            <el-table-column prop="startTime" label="开始时间" sortable align="center"></el-table-column>
+            <el-table-column prop="endTime" label="结束时间" sortable align="center"></el-table-column>
+            <el-table-column prop="runDuration" label="运行时长" sortable align="center"></el-table-column>
           </el-table-column>
         </el-table>
       </div>
@@ -78,8 +78,8 @@ export default {
       nodeListInfo: [],
       popupVisible: false,
       nodeInfo: {},
-      graphicX:'',
-      graphicY:''
+      graphicX: '',
+      graphicY: ''
     };
   },
   methods: {
@@ -97,11 +97,11 @@ export default {
       });
     },
     handleMouseOver(graphic) {
-      this.graphicX = graphic.x+graphic.width
-      this.graphicY = graphic.y-graphic.height
+      this.graphicX = graphic.x + graphic.width + 10;
+      this.graphicY = graphic.y - graphic.height + -10;
       this.nodeInfo = {};
       if (this.nodeListInfo && this.nodeListInfo.length > 0) {
-        let info = this.nodeListInfo.find((e) => (e.taskDefinitionKey == graphic.nodeId));
+        let info = this.nodeListInfo.find((e) => e.taskDefinitionKey == graphic.nodeId);
         if (info) {
           this.nodeInfo = {
             nickName: info.nickName,
@@ -120,3 +120,18 @@ export default {
   }
 };
 </script>
+<style scoped>
+.triangle{
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+}
+
+.triangle::after {
+  content: ' ';
+  position: absolute;
+  top: 8em;
+  right: 215px;
+  border: 15px solid;
+  border-color: transparent #fff transparent transparent;
+}
+</style>
