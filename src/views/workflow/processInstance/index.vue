@@ -44,7 +44,7 @@
         </el-table-column>
         <el-table-column align="center" prop="suspensionState" label="状态" min-width="70">
           <template #default="scope">
-            <el-tag type="success" v-if="!scope.row.suspensionState">激活</el-tag>
+            <el-tag type="success" v-if="scope.row.suspended">激活</el-tag>
             <el-tag type="danger" v-else>挂起</el-tag>
           </template>
         </el-table-column>
