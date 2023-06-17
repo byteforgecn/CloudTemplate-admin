@@ -30,7 +30,7 @@
     <el-card shadow="hover">
       <template #header>
         <el-row :gutter="10" class="mb8">
-          <right-toolbar v-model:showSearch="showSearch" @queryTable="getProcessInstanceRunningList"></right-toolbar>
+          <right-toolbar v-model:showSearch="showSearch" @queryTable="handleQuery"></right-toolbar>
         </el-row>
       </template>
 
@@ -42,9 +42,9 @@
         <el-table-column align="center" prop="processDefinitionVersion" label="版本号" width="90">
           <template #default="scope"> v{{ scope.row.processDefinitionVersion }}.0</template>
         </el-table-column>
-        <el-table-column align="center" prop="suspensionState" label="状态" min-width="70">
+        <el-table-column align="center" prop="isSuspended" label="状态" min-width="70" v-if="tab === 'running'">
           <template #default="scope">
-            <el-tag type="success" v-if="scope.row.suspended">激活</el-tag>
+            <el-tag type="success" v-if="!scope.row.isSuspended">激活</el-tag>
             <el-tag type="danger" v-else>挂起</el-tag>
           </template>
         </el-table-column>
