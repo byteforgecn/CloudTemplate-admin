@@ -196,7 +196,7 @@ const clickPreviewXML = (id: string) => {
 };
 /** 删除按钮操作 */
 const handleDelete = async (row: any) => {
-  await proxy?.$modal.confirm('是否确认流程定义key为"' + row.key + '"的数据项？');
+  await proxy?.$modal.confirm('是否确认删除流程定义key为【' + row.key + '】的数据项？');
   loading.value = true;
   await deleteProcessDefinition(row.deploymentId, row.id).finally(() => (loading.value = false));
   getList();
@@ -218,7 +218,7 @@ const handleProcessDefState = async (row: any) => {
 };
 /** 流程定义转换为模型 */
 const handleConvertToModel = async (row: any) => {
-  await proxy?.$modal.confirm('是否确认流程定义key为"' + row.key + '"的数据项？');
+  await proxy?.$modal.confirm('是否确认转换流程定义key为【' + row.key + '】的数据项？');
   await convertToModel(row.id).finally(() => (loading.value = false));
   getList();
   proxy?.$modal.msgSuccess('操作成功');
@@ -245,6 +245,6 @@ const handleCompleteTask = async (taskId: string) => {
   await completeTask(param).finally(() => (loading.value = false));
   getList();
   proxy?.$modal.msgSuccess('操作成功');
-  dialog.visible = false
+  dialog.visible = false;
 };
 </script>
