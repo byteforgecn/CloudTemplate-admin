@@ -30,6 +30,9 @@
     <el-card shadow="hover">
       <template #header>
         <el-row :gutter="10" class="mb8">
+          <el-col :span="1.5">
+            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete">删除</el-button>
+          </el-col>
           <right-toolbar v-model:showSearch="showSearch" @queryTable="handleQuery"></right-toolbar>
         </el-row>
       </template>
@@ -37,6 +40,7 @@
       <el-table v-loading="loading" :data="processInstanceList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
+        <el-table-column fixed align="center" prop="id" label="id"></el-table-column>
         <el-table-column fixed align="center" prop="processDefinitionName" label="流程定义名称"></el-table-column>
         <el-table-column fixed align="center" prop="processDefinitionKey" label="流程定义KEY"></el-table-column>
         <el-table-column align="center" prop="processDefinitionVersion" label="版本号" width="90">
@@ -56,7 +60,7 @@
                 <el-button type="text" size="small" icon="el-icon-thumb" @click="handleApprovalRecord(scope.row)">审批记录</el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button type="text" size="small" icon="el-icon-thumb" @click="handleDeleteRunning(scope.row)">删除</el-button>
+                <el-button type="text" size="small" icon="el-icon-thumb" @click="handleDelete(scope.row)">删除</el-button>
               </el-col>
             </el-row>
             <el-row :gutter="10" class="mb8" v-if="tab === 'running'">
@@ -178,14 +182,15 @@ const getProcessInstanceFinishList = () => {
 };
 
 /** 删除按钮操作 */
-const handleDeleteRunning = async (row: any) => {
-  await proxy?.$modal.confirm('是否确认删除业务id为【' + row.businessKey + '】的数据项？');
+const handleDelete = async (row: any) => {
+  const id = row.id || ids.value;
+  await proxy?.$modal.confirm('是否确认删除id为【' + id + '】的数据项？');
   loading.value = true;
   if ('running' === tab.value) {
-    await deleteRuntimeProcessAndHisInst(row.id).finally(() => (loading.value = false));
+    await deleteRuntimeProcessAndHisInst(id).finally(() => (loading.value = false));
     getProcessInstanceRunningList();
   } else {
-    await deleteFinishProcessAndHisInst(row.id).finally(() => (loading.value = false));
+    await deleteFinishProcessAndHisInst(id).finally(() => (loading.value = false));
     getProcessInstanceFinishList();
   }
   proxy?.$modal.msgSuccess('删除成功');

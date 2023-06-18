@@ -54,9 +54,7 @@
             </el-row>
             <el-row :gutter="10" class="mb8">
               <el-col :span="1.5">
-                <el-button link type="primary" icon="ScaleToOriginal" @click="clickDeploy(scope.row.id, scope.row.key)">
-                  流程部署
-                </el-button>
+                <el-button link type="primary" icon="ScaleToOriginal" @click="clickDeploy(scope.row.id, scope.row.key)"> 流程部署 </el-button>
               </el-col>
               <el-col :span="1.5">
                 <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
@@ -96,20 +94,20 @@
 <script lang="ts" setup name="Model">
 import { listModel, addModel, delModel, modelDeploy } from '@/api/workflow/model';
 import { ModelQuery, ModelForm } from '@/api/workflow/model/types';
-import { ComponentInternalInstance } from "vue";
-import Design from "./design.vue";
+import { ComponentInternalInstance } from 'vue';
+import Design from './design.vue';
 
-const { proxy } = getCurrentInstance() as ComponentInternalInstance
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const designModel = ref<InstanceType<typeof Design>>();
 const formRef = ref(ElForm);
-const queryFormRef = ref(ElForm)
+const queryFormRef = ref(ElForm);
 
 const buttonLoading = ref(false);
-const loading = ref(true)
-const ids = ref<Array<string | number>>([])
-const single = ref(true)
-const multiple = ref(true)
+const loading = ref(true);
+const ids = ref<Array<string | number>>([]);
+const single = ref(true);
+const multiple = ref(true);
 const showSearch = ref(true);
 const total = ref(0);
 const modelList = ref<Record<string, any>>([]);
@@ -123,7 +121,7 @@ const initFormData: ModelForm = {
   name: '',
   key: '',
   description: ''
-}
+};
 const data = reactive<PageData<ModelForm, ModelQuery>>({
   form: { ...initFormData },
   queryParams: {
@@ -133,17 +131,13 @@ const data = reactive<PageData<ModelForm, ModelQuery>>({
     key: ''
   },
   rules: {
-    name: [
-      { required: true, message: "模型不能为空", trigger: "blur" }
-    ],
-    key: [
-      { required: true, message: "key不能为空", trigger: "blur" }
-    ]
+    name: [{ required: true, message: '模型不能为空', trigger: 'blur' }],
+    key: [{ required: true, message: 'key不能为空', trigger: 'blur' }]
   }
-})
+});
 const { queryParams, form, rules } = toRefs(data);
 
-const modelId = ref<string>('')
+const modelId = ref<string>('');
 
 onMounted(() => {
   getList();
@@ -159,13 +153,13 @@ const resetQuery = () => {
   queryParams.value.pageNum = 1;
   queryParams.value.pageSize = 10;
   handleQuery();
-}
+};
 // 多选框选中数据
 const handleSelectionChange = (selection: any) => {
   ids.value = selection.map((item: any) => item.id);
   single.value = selection.length !== 1;
   multiple.value = !selection.length;
-}
+};
 //分页
 const getList = () => {
   loading.value = true;
@@ -174,13 +168,13 @@ const getList = () => {
     total.value = resp.total;
     loading.value = false;
   });
-}
+};
 /** 删除按钮操作 */
 const handleDelete = async (row: any) => {
-  const id = row.id || ids;
-  await proxy?.$modal.confirm('是否确认删除模型id为"' + id + '"的数据项？');
+  const id = row.id || ids.value;
+  await proxy?.$modal.confirm('是否确认删除模型id为【' + id + '】的数据项？');
   loading.value = true;
-  await delModel(id).finally(() => loading.value = false);
+  await delModel(id).finally(() => (loading.value = false));
   getList();
   proxy?.$modal.msgSuccess('删除成功');
 };
@@ -188,7 +182,7 @@ const handleDelete = async (row: any) => {
 const clickDeploy = async (id: string, key: string) => {
   await proxy?.$modal.confirm('是否部署模型key为【' + key + '】流程？');
   loading.value = true;
-  await modelDeploy(id).finally(() => loading.value = false);
+  await modelDeploy(id).finally(() => (loading.value = false));
   getList();
   proxy?.$modal.msgSuccess('部署成功');
 };
@@ -214,13 +208,13 @@ const submitForm = () => {
 const cancel = () => {
   reset();
   dialog.visible = false;
-}
+};
 
 /** 表单重置 */
 const reset = () => {
-  form.value = {...initFormData};
+  form.value = { ...initFormData };
   formRef.value.resetFields();
-}
+};
 
 // 打开设计流程
 const clickDesign = (id: string) => {
