@@ -27,6 +27,11 @@
         <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
         <el-table-column fixed align="center" prop="name" label="任务名称"></el-table-column>
         <el-table-column fixed align="center" prop="assignee" label="办理人"></el-table-column>
+        <el-table-column align="center" prop="businessStatusName" label="流程状态" min-width="70">
+          <template #default="scope">
+            <el-tag type="success">{{scope.row.businessStatusName}}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column align="center" prop="createTime" label="创建时间" width="160"></el-table-column>
         <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
           <template #default="scope">

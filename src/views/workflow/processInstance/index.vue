@@ -52,7 +52,13 @@
             <el-tag type="danger" v-else>挂起</el-tag>
           </template>
         </el-table-column>
+        <el-table-column align="center" prop="businessStatusName" label="流程状态" min-width="70">
+          <template #default="scope">
+            <el-tag type="success">{{scope.row.businessStatusName}}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column align="center" prop="startTime" label="启动时间" width="160"></el-table-column>
+        <el-table-column align="center" v-if="tab === 'finish'" prop="endTime" label="结束时间" width="160"></el-table-column>
         <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-row :gutter="10" class="mb8">
