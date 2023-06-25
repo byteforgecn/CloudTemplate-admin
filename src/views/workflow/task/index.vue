@@ -1,11 +1,23 @@
 <template>
   <div class="p-2">
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
+      <div class="mb-[10px]">
+        <el-card shadow="hover">
+          <center>
+            <el-radio-group v-model="tab" @change="changeTab(tab)">
+              <el-radio-button label="waiting">待办任务</el-radio-button>
+              <el-radio-button label="finish">已办任务</el-radio-button>
+            </el-radio-group>
+          </center>
+        </el-card>
+      </div>
+    </transition>
+    <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
       <div class="mb-[10px]" v-show="showSearch">
         <el-card shadow="hover">
           <el-form :model="queryParams" ref="queryFormRef" :inline="true" v-show="showSearch" label-width="68px">
             <el-form-item label="任务名称" prop="name">
-              <el-input v-model="queryParams.name" placeholder="请输入模型名称" clearable @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.name" placeholder="请输入任务名称" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -18,7 +30,7 @@
     <el-card shadow="hover">
       <template #header>
         <el-row :gutter="10" class="mb8">
-          <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+          <right-toolbar v-model:showSearch="showSearch" @queryTable="handleQuery"></right-toolbar>
         </el-row>
       </template>
 
@@ -27,9 +39,14 @@
         <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
         <el-table-column fixed align="center" prop="name" label="任务名称"></el-table-column>
         <el-table-column fixed align="center" prop="assignee" label="办理人"></el-table-column>
-        <el-table-column align="center" prop="businessStatusName" label="流程状态" min-width="70">
+        <el-table-column align="center" v-if="tab === 'waiting'" prop="businessStatusName" label="流程状态" min-width="70">
           <template #default="scope">
             <el-tag type="success">{{scope.row.businessStatusName}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" v-else prop="endTime" label="流程状态" min-width="70">
+          <template #default="scope">
+            <el-tag type="success" v-if="scope.row.endTime">已完成</el-tag>
           </template>
         </el-table-column>
         <el-table-column align="center" prop="createTime" label="创建时间" width="160"></el-table-column>
@@ -39,14 +56,20 @@
               <el-col :span="1.5">
                 <el-button type="text" size="small" icon="el-icon-thumb" @click="handleApprovalRecord(scope.row)">审批记录</el-button>
               </el-col>
-              <el-col :span="1.5">
+              <el-col :span="1.5" v-if="tab === 'waiting'">
                 <el-button type="text" size="small" icon="el-icon-thumb" @click="handleCompleteTask(scope.row.id)">办理</el-button>
               </el-col>
             </el-row>
           </template>
         </el-table-column>
       </el-table>
-      <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
+      <pagination
+        v-show="total > 0"
+        :total="total"
+        v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize"
+        @pagination="getWaitingList"
+      />
     </el-card>
     <!-- 审批记录 -->
     <approvalRecord ref="approvalRecordRef" />
@@ -54,7 +77,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getTaskWaitByPage, completeTask } from '@/api/workflow/task';
+import { getTaskWaitByPage, getTaskFinishByPage, completeTask } from '@/api/workflow/task';
 import { ComponentInternalInstance } from 'vue';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 //审批记录组件
@@ -80,9 +103,9 @@ const queryParams = ref<Record<string, any>>({
   pageSize: 10,
   name: undefined
 });
-
+const tab = ref('waiting');
 onMounted(() => {
-  getList();
+  getWaitingList();
 });
 //审批记录
 const handleApprovalRecord = (row: any) => {
@@ -93,7 +116,11 @@ const handleApprovalRecord = (row: any) => {
 /** 搜索按钮操作 */
 const handleQuery = () => {
   queryParams.value.pageNum = 1;
-  getList();
+  if ('waiting' === tab.value) {
+    getWaitingList();
+  } else {
+    getFinishList();
+  }
 };
 /** 重置按钮操作 */
 const resetQuery = () => {
@@ -108,8 +135,15 @@ const handleSelectionChange = (selection: any) => {
   single.value = selection.length !== 1;
   multiple.value = !selection.length;
 };
+const changeTab = async (data: string) => {
+  if ('waiting' === data) {
+    getWaitingList();
+  } else {
+    getFinishList();
+  }
+};
 //分页
-const getList = () => {
+const getWaitingList = () => {
   loading.value = true;
   getTaskWaitByPage(queryParams.value).then((resp) => {
     taskList.value = resp.rows;
@@ -117,6 +151,15 @@ const getList = () => {
     loading.value = false;
   });
 };
+const getFinishList = () => {
+  loading.value = true;
+  getTaskFinishByPage(queryParams.value).then((resp) => {
+    taskList.value = resp.rows;
+    total.value = resp.total;
+    loading.value = false;
+  });
+};
+
 /** 办理流程 */
 const handleCompleteTask = async (taskId: string) => {
   await proxy?.$modal.confirm('是否确认办理流程？');
@@ -124,7 +167,7 @@ const handleCompleteTask = async (taskId: string) => {
     taskId: taskId
   };
   await completeTask(param).finally(() => (loading.value = false));
-  getList();
+  getWaitingList();
   proxy?.$modal.msgSuccess('操作成功');
 };
 </script>
