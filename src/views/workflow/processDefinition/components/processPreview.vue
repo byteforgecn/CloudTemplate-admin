@@ -45,6 +45,7 @@ export default {
   height: 500px;
   width: inherit;
   line-height: 1px;
+  overflow: auto;
 }
 .font {
   font-family: '幼圆';
