@@ -38,15 +38,24 @@
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
         <el-table-column fixed align="center" prop="name" label="任务名称"></el-table-column>
-        <el-table-column fixed align="center" prop="assignee" label="办理人"></el-table-column>
-        <el-table-column align="center" v-if="tab === 'waiting'" prop="businessStatusName" label="流程状态" min-width="70">
-          <template #default="scope">
-            <el-tag type="success">{{scope.row.businessStatusName}}</el-tag>
+        <el-table-column fixed align="center" prop="assignee" label="办理人">
+          <template #default="scope" v-if="tab === 'waiting'">
+            <template v-if="scope.row.participantVo && scope.row.assignee">
+              <el-tag type="success" v-for="(item,index) in scope.row.participantVo.candidateName" :key="index">
+                {{ item }}
+              </el-tag>
+            </template>
+          </template>
+          <template #default="scope" v-else-if="tab === 'finish'">
+            <el-tag type="success">
+              {{ scope.row.assigneeName }}
+            </el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" v-else prop="endTime" label="流程状态" min-width="70">
+        <el-table-column align="center" prop="businessStatusName" label="流程状态" min-width="70">
           <template #default="scope">
-            <el-tag type="success" v-if="scope.row.endTime">已完成</el-tag>
+            <el-tag type="success" v-if="tab === 'waiting'">{{scope.row.businessStatusName}}</el-tag>
+            <el-tag type="success" v-else>已完成</el-tag>
           </template>
         </el-table-column>
         <el-table-column align="center" prop="createTime" label="创建时间" width="160"></el-table-column>
@@ -56,8 +65,14 @@
               <el-col :span="1.5">
                 <el-button type="text" size="small" icon="el-icon-thumb" @click="handleApprovalRecord(scope.row)">审批记录</el-button>
               </el-col>
-              <el-col :span="1.5" v-if="tab === 'waiting'">
+              <el-col :span="1.5" v-if="tab === 'waiting' && scope.row.participantVo && (scope.row.participantVo.claim === null||scope.row.participantVo.claim === true)">
                 <el-button type="text" size="small" icon="el-icon-thumb" @click="handleCompleteTask(scope.row.id)">办理</el-button>
+              </el-col>
+              <el-col :span="1.5" v-if="tab === 'waiting' && scope.row.participantVo && scope.row.participantVo.claim === true">
+                <el-button type="text" size="small" icon="el-icon-thumb" @click="handleReturnTask(scope.row.id)">归还</el-button>
+              </el-col>
+              <el-col :span="1.5" v-if="tab === 'waiting' && scope.row.participantVo && scope.row.participantVo.claim === false">
+                <el-button type="text" size="small" icon="el-icon-thumb" @click="handleClaimTask(scope.row.id)">认领</el-button>
               </el-col>
             </el-row>
           </template>
@@ -68,7 +83,7 @@
         :total="total"
         v-model:page="queryParams.pageNum"
         v-model:limit="queryParams.pageSize"
-        @pagination="getWaitingList"
+        @pagination="handleQuery"
       />
     </el-card>
     <!-- 审批记录 -->
@@ -77,7 +92,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getTaskWaitByPage, getTaskFinishByPage, completeTask } from '@/api/workflow/task';
+import { getTaskWaitByPage, getTaskFinishByPage, completeTask, claim, returnTask } from '@/api/workflow/task';
 import { ComponentInternalInstance } from 'vue';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 //审批记录组件
@@ -115,7 +130,6 @@ const handleApprovalRecord = (row: any) => {
 };
 /** 搜索按钮操作 */
 const handleQuery = () => {
-  queryParams.value.pageNum = 1;
   if ('waiting' === tab.value) {
     getWaitingList();
   } else {
@@ -136,6 +150,7 @@ const handleSelectionChange = (selection: any) => {
   multiple.value = !selection.length;
 };
 const changeTab = async (data: string) => {
+  queryParams.value.pageNum = 1;
   if ('waiting' === data) {
     getWaitingList();
   } else {
@@ -167,6 +182,20 @@ const handleCompleteTask = async (taskId: string) => {
     taskId: taskId
   };
   await completeTask(param).finally(() => (loading.value = false));
+  getWaitingList();
+  proxy?.$modal.msgSuccess('操作成功');
+};
+
+/** 认领任务 */
+const handleClaimTask = async (taskId: string) => {
+  await claim(taskId).finally(() => (loading.value = false));
+  getWaitingList();
+  proxy?.$modal.msgSuccess('操作成功');
+};
+
+/** 归还任务 */
+const handleReturnTask = async (taskId: string) => {
+  await returnTask(taskId).finally(() => (loading.value = false));
   getWaitingList();
   proxy?.$modal.msgSuccess('操作成功');
 };

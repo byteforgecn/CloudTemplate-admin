@@ -111,7 +111,7 @@
             :total="total"
             v-model:page="queryParams.pageNum"
             v-model:limit="queryParams.pageSize"
-            @pagination="getProcessInstanceRunningList"
+            @pagination="handleQuery"
           />
         </el-card>
       </el-col>
@@ -219,7 +219,6 @@ const handleApprovalRecord = (row: any) => {
 };
 /** 搜索按钮操作 */
 const handleQuery = () => {
-  queryParams.value.pageNum = 1;
   if ('running' === tab.value) {
     getProcessInstanceRunningList();
   } else {
@@ -274,6 +273,7 @@ const handleDelete = async (row: any) => {
   proxy?.$modal.msgSuccess('删除成功');
 };
 const changeTab = async (data: string) => {
+  queryParams.value.pageNum = 1;
   if ('running' === data) {
     getProcessInstanceRunningList();
   } else {

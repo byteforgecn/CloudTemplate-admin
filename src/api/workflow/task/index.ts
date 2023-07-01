@@ -52,4 +52,28 @@ export const completeTask = (data: object) => {
   });
 };
 
+/**
+ * 认领任务
+ * @param taskId
+ * @returns {*}
+ */
+export const claim = (taskId: string) => {
+  return request({
+    url: '/workflow/task/claim/' + taskId,
+    method: 'post'
+  });
+};
+
+/**
+ * 归还任务
+ * @param taskId
+ * @returns {*}
+ */
+export const returnTask = (taskId: string) => {
+  return request({
+    url: '/workflow/task/returnTask/' + taskId,
+    method: 'post'
+  });
+};
+
 
