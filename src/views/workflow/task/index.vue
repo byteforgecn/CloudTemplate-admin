@@ -19,6 +19,12 @@
             <el-form-item label="任务名称" prop="name">
               <el-input v-model="queryParams.name" placeholder="请输入任务名称" clearable @keyup.enter="handleQuery" />
             </el-form-item>
+            <el-form-item label="流程定义名称" label-width="100" prop="name">
+              <el-input v-model="queryParams.processDefinitionName" placeholder="请输入流程定义名称" clearable @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="流程定义KEY" label-width="100" prop="name">
+              <el-input v-model="queryParams.processDefinitionKey" placeholder="请输入流程定义KEY" clearable @keyup.enter="handleQuery" />
+            </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
               <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -37,6 +43,8 @@
       <el-table v-loading="loading" :data="taskList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
+        <el-table-column fixed align="center" prop="processDefinitionName" label="流程定义名称"></el-table-column>
+        <el-table-column fixed align="center" prop="processDefinitionKey" label="流程定义KEY"></el-table-column>
         <el-table-column fixed align="center" prop="name" label="任务名称"></el-table-column>
         <el-table-column fixed align="center" prop="assignee" label="办理人">
           <template #default="scope" v-if="tab === 'waiting'">
@@ -65,7 +73,10 @@
               <el-col :span="1.5">
                 <el-button type="text" size="small" icon="el-icon-thumb" @click="handleApprovalRecord(scope.row)">审批记录</el-button>
               </el-col>
-              <el-col :span="1.5" v-if="tab === 'waiting' && scope.row.participantVo && (scope.row.participantVo.claim === null||scope.row.participantVo.claim === true)">
+              <el-col
+                :span="1.5"
+                v-if="tab === 'waiting' && scope.row.participantVo && (scope.row.participantVo.claim === null||scope.row.participantVo.claim === true)"
+              >
                 <el-button type="text" size="small" icon="el-icon-thumb" @click="handleCompleteTask(scope.row.id)">办理</el-button>
               </el-col>
               <el-col :span="1.5" v-if="tab === 'waiting' && scope.row.participantVo && scope.row.participantVo.claim === true">
@@ -116,7 +127,9 @@ const taskList = ref([]);
 const queryParams = ref<Record<string, any>>({
   pageNum: 1,
   pageSize: 10,
-  name: undefined
+  name: undefined,
+  processDefinitionName: undefined,
+  processDefinitionKey: undefined
 });
 const tab = ref('waiting');
 onMounted(() => {

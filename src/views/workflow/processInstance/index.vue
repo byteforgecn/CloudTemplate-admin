@@ -39,6 +39,9 @@
                 <el-form-item label="流程定义名称" prop="name">
                   <el-input v-model="queryParams.name" placeholder="请输入流程定义名称" clearable @keyup.enter="handleQuery" />
                 </el-form-item>
+                <el-form-item label="流程定义KEY" prop="name">
+                  <el-input v-model="queryParams.key" placeholder="请输入流程定义KEY" clearable @keyup.enter="handleQuery" />
+                </el-form-item>
                 <el-form-item>
                   <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
                   <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -172,6 +175,7 @@ const queryParams = ref<Record<string, any>>({
   pageNum: 1,
   pageSize: 10,
   name: undefined,
+  key: undefined,
   categoryCode: undefined
 });
 

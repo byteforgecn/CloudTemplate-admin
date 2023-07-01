@@ -143,8 +143,6 @@ type CategoryOption = {
 };
 
 const tab = ref('running');
-// 作废原因
-const deleteReason = ref('');
 // 查询参数
 const queryParams = ref<Record<string, any>>({
   pageNum: 1,
