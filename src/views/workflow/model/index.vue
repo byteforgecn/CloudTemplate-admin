@@ -1,7 +1,7 @@
 <template>
   <div class="p-2">
     <el-row :gutter="20">
-      <!-- 部门树 -->
+      <!-- 流程分类树 -->
       <el-col :lg="4" :xs="24" style="">
         <el-card shadow="hover">
           <el-input placeholder="请输入流程分类名" v-model="categoryName" prefix-icon="Search" clearable />
@@ -198,7 +198,6 @@ onMounted(() => {
 /** 节点单击事件 */
 const handleNodeClick = (data: ModelForm) => {
     queryParams.value.categoryCode = data.categoryCode;
-    console.log(data.categoryCode)
     if(data.categoryCode === 'ALL'){
         queryParams.value.categoryCode =''
     }
@@ -225,6 +224,7 @@ const handleQuery = () => {
 /** 重置按钮操作 */
 const resetQuery = () => {
   queryFormRef.value.resetFields();
+  queryParams.value.categoryCode = '';
   queryParams.value.pageNum = 1;
   queryParams.value.pageSize = 10;
   handleQuery();
