@@ -172,6 +172,11 @@ const queryParams = ref<Record<string, any>>({
   categoryCode: undefined
 });
 
+const submitFormData = ref<Record<string, any>>({
+  businessKey: '',
+  processKey: ''
+});
+
 onMounted(() => {
   getList();
   getTreeselect();
@@ -291,19 +296,19 @@ const handleConvertToModel = async (row: any) => {
 
 /** 打开启动流程弹窗 */
 const openHandleStartWorkFlow = async (row: any) => {
-  form.value.processKey = row.key;
-  form.value.businessKey = Date.parse(new Date());
+  submitFormData.value.processKey = row.key;
+  submitFormData.value.businessKey = Date.parse(new Date());
   dialog.visible = true;
 };
 /** 启动流程 */
 const handleStartWorkFlow = async () => {
-  startWorkFlow(form.value).then((response) => {
+  await proxy?.$modal.confirm('是否确认启动流程？');
+  startWorkFlow(submitFormData.value).then((response) => {
     handleCompleteTask(response.data.taskId);
   });
 };
 /** 办理流程 */
 const handleCompleteTask = async (taskId: string) => {
-  await proxy?.$modal.confirm('是否确认启动流程？');
   let param = {
     taskId: taskId
   };

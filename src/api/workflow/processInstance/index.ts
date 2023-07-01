@@ -83,3 +83,28 @@ export const deleteFinishProcessAndHisInst = (processInstanceId: string) => {
     method: 'delete'
   });
 };
+
+/**
+ * 分页查询当前登录人单据
+ * @param query
+ * @returns {*}
+ */
+export const getCurrentSubmitByPage = (query: object) => {
+  return request({
+    url: '/workflow/processInstance/getCurrentSubmitByPage',
+    method: 'get',
+    params: query
+  });
+};
+
+/**
+ * 撤销流程
+ * @param processInstanceId 流程实例id
+ * @returns
+ */
+export const cancelProcessApply = (processInstanceId: string) => {
+  return request({
+    url: `/workflow/processInstance/cancelProcessApply/${processInstanceId}`,
+    method: 'post'
+  });
+};
