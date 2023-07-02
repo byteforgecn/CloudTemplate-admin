@@ -46,11 +46,16 @@
         <el-table-column fixed align="center" prop="processDefinitionName" label="流程定义名称"></el-table-column>
         <el-table-column fixed align="center" prop="processDefinitionKey" label="流程定义KEY"></el-table-column>
         <el-table-column fixed align="center" prop="name" label="任务名称"></el-table-column>
-        <el-table-column fixed align="center" prop="assignee" label="办理人">
+        <el-table-column fixed align="center" prop="assigneeName" label="办理人">
           <template #default="scope" v-if="tab === 'waiting'">
-            <template v-if="scope.row.participantVo && scope.row.assignee">
+            <template v-if="scope.row.participantVo && scope.row.assignee === null">
               <el-tag type="success" v-for="(item,index) in scope.row.participantVo.candidateName" :key="index">
                 {{ item }}
+              </el-tag>
+            </template>
+            <template v-else>
+              <el-tag type="success">
+                {{ scope.row.assigneeName }}
               </el-tag>
             </template>
           </template>
@@ -77,7 +82,7 @@
                 :span="1.5"
                 v-if="tab === 'waiting' && scope.row.participantVo && (scope.row.participantVo.claim === null||scope.row.participantVo.claim === true)"
               >
-                <el-button type="text" size="small" icon="el-icon-thumb" @click="handleCompleteTask(scope.row.id)">办理</el-button>
+                <el-button type="text" size="small" icon="el-icon-thumb" @click="submitVerifyOpen(scope.row.id)">办理</el-button>
               </el-col>
               <el-col :span="1.5" v-if="tab === 'waiting' && scope.row.participantVo && scope.row.participantVo.claim === true">
                 <el-button type="text" size="small" icon="el-icon-thumb" @click="handleReturnTask(scope.row.id)">归还</el-button>
@@ -99,13 +104,18 @@
     </el-card>
     <!-- 审批记录 -->
     <approvalRecord ref="approvalRecordRef" />
+    <!-- 提交组件 -->
+    <submitVerify ref="submitVerifyRef" :taskId="taskId" @submitCallback="handleQuery" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { getTaskWaitByPage, getTaskFinishByPage, completeTask, claim, returnTask } from '@/api/workflow/task';
+import { getTaskWaitByPage, getTaskFinishByPage, claim, returnTask } from '@/api/workflow/task';
 import { ComponentInternalInstance } from 'vue';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
+import SubmitVerify from '@/components/Process/submitVerify.vue';
+//提交组件
+const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
 //审批记录组件
 const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -123,6 +133,8 @@ const showSearch = ref(true);
 const total = ref(0);
 // 模型定义表格数据
 const taskList = ref([]);
+// 任务id
+const taskId = ref('');
 // 查询参数
 const queryParams = ref<Record<string, any>>({
   pageNum: 1,
@@ -187,16 +199,12 @@ const getFinishList = () => {
     loading.value = false;
   });
 };
-
-/** 办理流程 */
-const handleCompleteTask = async (taskId: string) => {
-  await proxy?.$modal.confirm('是否确认办理流程？');
-  let param = {
-    taskId: taskId
-  };
-  await completeTask(param).finally(() => (loading.value = false));
-  getWaitingList();
-  proxy?.$modal.msgSuccess('操作成功');
+//提交
+const submitVerifyOpen = async (id: string) => {
+  if (submitVerifyRef.value) {
+    taskId.value = id;
+    submitVerifyRef.value.openDialog(true);
+  }
 };
 
 /** 认领任务 */

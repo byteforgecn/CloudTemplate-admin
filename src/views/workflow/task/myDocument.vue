@@ -83,7 +83,7 @@
                     :span="1.5"
                     v-if="scope.row.businessStatus === 'draft'||scope.row.businessStatus === 'cancel'||scope.row.businessStatus === 'back'"
                   >
-                    <el-button type="text" size="small" icon="el-icon-thumb" @click="handleCompleteTask(scope.row.taskVoList[0].id)">提交</el-button>
+                    <el-button type="text" size="small" icon="el-icon-thumb" @click="submitVerifyOpen(scope.row.taskVoList[0].id)">提交</el-button>
                   </el-col>
                 </el-row>
               </template>
@@ -101,6 +101,8 @@
     </el-row>
     <!-- 审批记录 -->
     <approvalRecord ref="approvalRecordRef" />
+    <!-- 提交组件 -->
+    <submitVerify ref="submitVerifyRef" :taskId="taskId" @submitCallback="getList"/>
   </div>
 </template>
 
@@ -108,10 +110,12 @@
 import { getCurrentSubmitByPage, deleteRuntimeProcessAndHisInst, cancelProcessApply } from '@/api/workflow/processInstance';
 import { ComponentInternalInstance } from 'vue';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
+import SubmitVerify from '@/components/Process/submitVerify.vue';
 import { listCategory } from '@/api/workflow/category';
 import { ElTree } from 'element-plus';
 import { CategoryVO } from '@/api/workflow/category/types';
-import { completeTask } from '@/api/workflow/task';
+//提交组件
+const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
 //审批记录组件
 const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -143,6 +147,8 @@ type CategoryOption = {
 };
 
 const tab = ref('running');
+// 任务id
+const taskId = ref('');
 // 查询参数
 const queryParams = ref<Record<string, any>>({
   pageNum: 1,
@@ -245,15 +251,11 @@ const handleCancelProcessApply = async (row: any) => {
   }
   proxy?.$modal.msgSuccess('撤销成功');
 };
-
-/** 办理流程 */
-const handleCompleteTask = async (taskId: string) => {
-  await proxy?.$modal.confirm('是否确认提交？');
-  let param = {
-    taskId: taskId
-  };
-  await completeTask(param).finally(() => (loading.value = false));
-  getList();
-  proxy?.$modal.msgSuccess('操作成功');
+//提交
+const submitVerifyOpen = async (id: string) => {
+  if (submitVerifyRef.value) {
+    taskId.value = id;
+    submitVerifyRef.value.openDialog(true);
+  }
 };
 </script>
