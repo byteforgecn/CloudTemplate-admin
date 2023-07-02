@@ -39,6 +39,14 @@
         <el-image :src="src" />
       </div>
       <div>
+        <el-card class="box-card" v-if="historyList && deleteReason">
+          <template #header>
+            <div class="card-header">
+              <span>作废理由：</span>
+            </div>
+          </template>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ deleteReason }}</div>
+        </el-card>
         <el-table :data="historyList" style="width: 100%" border fit max-height="570">
           <el-table-column label="流程审批历史记录" align="center">
             <el-table-column type="index" label="序号" align="center" width="50"></el-table-column>
@@ -74,6 +82,7 @@ export default {
       src: '',
       visible: false,
       historyList: [],
+      deleteReason: '',
       graphicInfoVos: [],
       nodeListInfo: [],
       popupVisible: false,
@@ -93,6 +102,7 @@ export default {
         this.historyList = response.data.historyRecordList;
         this.graphicInfoVos = response.data.graphicInfoVos;
         this.nodeListInfo = response.data.nodeListInfo;
+        this.deleteReason = response.data.deleteReason;
         this.loading = false;
       });
     },
@@ -121,7 +131,7 @@ export default {
 };
 </script>
 <style scoped>
-.triangle{
+.triangle {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
   border-radius: 6px;
 }
