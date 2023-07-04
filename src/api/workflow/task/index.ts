@@ -27,6 +27,32 @@ export const getTaskFinishByPage = (query: object) => {
 };
 
 /**
+ * 当前租户所有待办任务
+ * @param query
+ * @returns {*}
+ */
+export const getAllTaskWaitByPage = (query: object) => {
+  return request({
+    url: '/workflow/task/getAllTaskWaitByPage',
+    method: 'get',
+    params: query
+  });
+};
+
+/**
+ * 当前租户所有已办任务
+ * @param query
+ * @returns {*}
+ */
+export const getAllTaskFinishByPage = (query: object) => {
+  return request({
+    url: '/workflow/task/getAllTaskFinishByPage',
+    method: 'get',
+    params: query
+  });
+};
+
+/**
  * 启动流程
  * @param data
  * @returns {*}
