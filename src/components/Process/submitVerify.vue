@@ -16,6 +16,7 @@
       <span class="dialog-footer">
         <el-button @click="dialog.visible = false">取消</el-button>
         <el-button type="primary" @click="handleCompleteTask"> 提交 </el-button>
+        <el-button type="danger" @click="handleBackProcess" v-if="businessStatus === 'waiting'"> 退回 </el-button>
       </span>
     </template>
   </el-dialog>
@@ -25,7 +26,7 @@
 import { ref } from 'vue';
 import { ComponentInternalInstance } from 'vue';
 import { ElForm } from 'element-plus';
-import { completeTask } from '@/api/workflow/task';
+import { completeTask, backProcess, getBusinessStatus } from '@/api/workflow/task';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const props = defineProps({
   taskId: {
@@ -35,8 +36,10 @@ const props = defineProps({
   }
 });
 
-// 遮罩层
+//遮罩层
 const loading = ref(true);
+//流程状态
+const businessStatus = ref('');
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -51,7 +54,13 @@ const form = ref<Record<string, any>>({
 });
 //打开弹窗
 const openDialog = (visible?: any) => {
+  form.value.message = undefined;
   dialog.visible = visible;
+  nextTick(() => {
+    getBusinessStatus(props.taskId).then((response) => {
+      businessStatus.value = response.data;
+    });
+  });
 };
 
 onMounted(() => {});
@@ -66,6 +75,17 @@ const handleCompleteTask = async () => {
   emits('submitCallback');
   proxy?.$modal.msgSuccess('操作成功');
 };
+
+/** 驳回流程 */
+const handleBackProcess = async () => {
+  form.value.taskId = props.taskId;
+  await proxy?.$modal.confirm('是否确认驳回到申请人？');
+  await backProcess(form.value).finally(() => (loading.value = false));
+  dialog.visible = false;
+  emits('submitCallback');
+  proxy?.$modal.msgSuccess('操作成功');
+};
+
 /**
  * 对外暴露子组建方法
  */

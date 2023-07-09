@@ -102,4 +102,28 @@ export const returnTask = (taskId: string) => {
   });
 };
 
+/**
+ * 任务驳回
+ * @param taskId
+ * @returns {*}
+ */
+export const backProcess = (data: object) => {
+  return request({
+    url: '/workflow/task/backProcess',
+    method: 'post',
+    data: data
+  });
+};
+
+/**
+ * 获取流程状态
+ * @param taskId 
+ * @returns 
+ */
+export const getBusinessStatus = (taskId: string) => {
+  return request({
+    url: '/workflow/task/getBusinessStatus/' + taskId,
+    method: 'get'
+  });
+};
 
