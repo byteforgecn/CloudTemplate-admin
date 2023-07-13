@@ -52,7 +52,11 @@
             <el-table-column type="index" label="序号" align="center" width="50"></el-table-column>
             <el-table-column prop="name" label="任务名称" sortable align="center"></el-table-column>
             <el-table-column prop="nickName" label="办理人" sortable align="center"></el-table-column>
-            <el-table-column prop="status" label="状态" sortable align="center"></el-table-column>
+            <el-table-column label="状态" sortable align="center">
+              <template #default="scope">
+                <el-tag type="success">{{scope.row.statusName}}</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column prop="comment" label="审批意见" sortable align="center"></el-table-column>
             <el-table-column prop="startTime" label="开始时间" sortable align="center"></el-table-column>
             <el-table-column prop="endTime" label="结束时间" sortable align="center"></el-table-column>
