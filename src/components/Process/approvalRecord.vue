@@ -39,14 +39,6 @@
         <el-image :src="src" />
       </div>
       <div>
-        <el-card class="box-card" v-if="historyList && deleteReason">
-          <template #header>
-            <div class="card-header">
-              <span>作废理由：</span>
-            </div>
-          </template>
-          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ deleteReason }}</div>
-        </el-card>
         <el-table :data="historyList" style="width: 100%" border fit max-height="570">
           <el-table-column label="流程审批历史记录" align="center">
             <el-table-column type="index" label="序号" align="center" width="50"></el-table-column>

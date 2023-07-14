@@ -23,12 +23,12 @@
         <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
           <div class="mb-[10px]" v-show="showSearch">
             <el-card shadow="hover">
-              <el-form :model="queryParams" ref="queryFormRef" :inline="true" v-show="showSearch" label-width="68px">
+              <el-form :model="queryParams" ref="queryFormRef" :inline="true" v-show="showSearch" label-width="80px">
                 <el-form-item label="模型名称" prop="name">
                   <el-input v-model="queryParams.name" placeholder="请输入模型名称" clearable @keyup.enter="handleQuery" />
                 </el-form-item>
-                <el-form-item label="标识Key" prop="key">
-                  <el-input v-model="queryParams.key" placeholder="请输入标识Key" clearable @keyup.enter="handleQuery" />
+                <el-form-item label="模型KEY" prop="key">
+                  <el-input v-model="queryParams.key" placeholder="请输入模型KEY" clearable @keyup.enter="handleQuery" />
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -55,7 +55,7 @@
             <el-table-column type="selection" width="55" align="center" />
             <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
             <el-table-column fixed align="center" prop="name" label="模型名称"></el-table-column>
-            <el-table-column align="center" prop="key" label="标识Key"></el-table-column>
+            <el-table-column align="center" prop="key" label="模型KEY"></el-table-column>
             <el-table-column align="center" prop="version" label="版本号" width="90">
               <template #default="scope"> v{{ scope.row.version }}.0</template>
             </el-table-column>
@@ -102,7 +102,7 @@
         <el-form-item label="模型名称：" prop="name">
           <el-input v-model="form.name" maxlength="20" show-word-limit />
         </el-form-item>
-        <el-form-item label="标识Key：" prop="key">
+        <el-form-item label="模型KEY：" prop="key">
           <el-input v-model="form.key" maxlength="20" show-word-limit />
         </el-form-item>
         <el-form-item label="流程分类" prop="categoryCode">
@@ -182,7 +182,7 @@ const data = reactive<PageData<ModelForm, ModelQuery>>({
   },
   rules: {
     name: [{ required: true, message: '模型不能为空', trigger: 'blur' }],
-    key: [{ required: true, message: 'key不能为空', trigger: 'blur' }],
+    key: [{ required: true, message: '模型KEY不能为空', trigger: 'blur' }],
     categoryCode: [{ required: true, message: '流程分类不能为空', trigger: 'blur' }]
   }
 });
