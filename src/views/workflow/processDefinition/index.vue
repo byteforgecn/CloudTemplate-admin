@@ -174,7 +174,8 @@ const queryParams = ref<Record<string, any>>({
 
 const submitFormData = ref<Record<string, any>>({
   businessKey: '',
-  processKey: ''
+  processKey: '',
+  variables: {}
 });
 
 onMounted(() => {
@@ -298,6 +299,9 @@ const handleConvertToModel = async (row: any) => {
 const openHandleStartWorkFlow = async (row: any) => {
   submitFormData.value.processKey = row.key;
   submitFormData.value.businessKey = Date.parse(new Date());
+  submitFormData.value.variables = {
+    userList:[1,2]
+  }
   dialog.visible = true;
 };
 /** 启动流程 */

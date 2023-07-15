@@ -127,3 +127,29 @@ export const getBusinessStatus = (taskId: string) => {
   });
 };
 
+/**
+ * 加签
+ * @param data 
+ * @returns 
+ */
+export const addMultiInstanceExecution = (data: object) => {
+  return request({
+    url: '/workflow/task/addMultiInstanceExecution',
+    method: 'post',
+    data: data
+  });
+};
+
+/**
+ * 减签
+ * @param data 
+ * @returns 
+ */
+export const deleteMultiInstanceExecution = (data: object) => {
+  return request({
+    url: '/workflow/task/deleteMultiInstanceExecution',
+    method: 'post',
+    data: data
+  });
+};
+

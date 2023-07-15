@@ -78,6 +78,12 @@
               <el-col :span="1.5">
                 <el-button type="text" size="small" icon="el-icon-thumb" @click="handleApprovalRecord(scope.row)">审批记录</el-button>
               </el-col>
+              <el-col :span="1.5" v-if="scope.row.multiInstance">
+                <el-button type="text" size="small" icon="el-icon-thumb" @click="addMultiInstanceUser(scope.row)">加签</el-button>
+              </el-col>
+              <el-col :span="1.5" v-if="scope.row.multiInstance">
+                <el-button type="text" size="small" icon="el-icon-thumb" @click="deleteMultiInstanceUser(scope.row)">减签</el-button>
+              </el-col>
             </el-row>
           </template>
         </el-table-column>
@@ -94,6 +100,8 @@
     <approvalRecord ref="approvalRecordRef" />
     <!-- 提交组件 -->
     <submitVerify ref="submitVerifyRef" :taskId="taskId" @submitCallback="handleQuery" />
+    <!-- 加签组件 -->
+    <multiInstanceUser ref="multiInstanceUserRef" :title="title" @submitCallback="handleQuery" />
   </div>
 </template>
 
@@ -102,10 +110,13 @@ import { getAllTaskWaitByPage, getAllTaskFinishByPage } from '@/api/workflow/tas
 import { ComponentInternalInstance } from 'vue';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 import SubmitVerify from '@/components/Process/submitVerify.vue';
+import MultiInstanceUser from '@/components/Process/multiInstance-user.vue';
 //提交组件
 const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
 //审批记录组件
 const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
+//加签组件
+const multiInstanceUserRef = ref<InstanceType<typeof MultiInstanceUser>>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 // 遮罩层
 const loading = ref(true);
@@ -123,6 +134,8 @@ const total = ref(0);
 const taskList = ref([]);
 // 任务id
 const taskId = ref('');
+const title = ref('');
+const userIdList = ref<Array<any>>([]);
 // 查询参数
 const queryParams = ref<Record<string, any>>({
   pageNum: 1,
@@ -139,6 +152,20 @@ onMounted(() => {
 const handleApprovalRecord = (row: any) => {
   if (approvalRecordRef.value) {
     approvalRecordRef.value.init(row.processInstanceId);
+  }
+};
+//加签
+const addMultiInstanceUser = (row: any) => {
+  if (multiInstanceUserRef.value) {
+    title.value = '加签人员';
+    multiInstanceUserRef.value.getAddMultiInstanceList(row.id, []);
+  }
+};
+//减签
+const deleteMultiInstanceUser = (row: any) => {
+  if (multiInstanceUserRef.value) {
+    title.value = '减签人员';
+    multiInstanceUserRef.value.getDeleteMultiInstanceList(row.id);
   }
 };
 /** 搜索按钮操作 */
