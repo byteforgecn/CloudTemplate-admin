@@ -68,7 +68,7 @@
 
     <!-- 预览表单对话框 -->
     <el-dialog :title="render.title" v-model="render.visible" width="60%" append-to-body>
-      <v-form-render :form-json="formJson" :form-data="formData" ref="vfRenderRef" />
+      <v-form-render :form-json="{}" :form-data="{}" ref="vfRenderRef" />
     </el-dialog>
 
     <!-- 添加或修改流程表单对话框 -->
@@ -159,10 +159,6 @@ const data = reactive<PageData<FormForm, FormQuery>>({
 
 const { queryParams, form, rules } = toRefs<PageData<FormForm, FormQuery>>(data);
 
-const formJson = reactive({"widgetList": [], "formConfig":{}});
-const formData = reactive({})
-
-
 /** 查询岗位列表 */
 const getList = async () => {
   loading.value = true;
@@ -211,10 +207,7 @@ const handleUpdate = (row?: FormVO) => {
     const formId = row?.formId || ids.value[0];
     const res = await getForm(formId);
     form.value = res.data;
-    vfDesignerRef.value.setFormJson({
-      "formConfig": JSON.parse(form.value.formConfig),
-      "widgetList": JSON.parse(form.value.content)
-    });
+    vfDesignerRef.value.setFormJson(form.value.content);
   })
 }
 /** 查看表单操作 */
@@ -222,8 +215,7 @@ const handleDetail = (row: FormVO) => {
   render.visible = true;
   render.title = '查看表单详情';
   nextTick(async () => {
-    formJson.formConfig = eval("(" + row.formConfig + ")");
-    formJson.widgetList = eval("(" + row.content + ")");
+    vfRenderRef.value.setFormJson(row.content || {formConfig: {}, widgetList: []});
   });
 }
 
@@ -244,10 +236,8 @@ const handleExport = () => {
 }
 
 const submitForm = () => {
-  let formJson = vfDesignerRef.value.getFormJson();
-  console.log("formJson => ", formJson)
-  form.value.formConfig = JSON.stringify(formJson.formConfig);
-  form.value.content = JSON.stringify(formJson.widgetList);
+  const formJson = vfDesignerRef.value.getFormJson();
+  form.value.content = JSON.stringify(formJson);
   nextTick(async () => {
     form.value.formId ? await updateForm(form.value) : await addForm(form.value);
     proxy?.$modal.msgSuccess("操作成功");
