@@ -38,6 +38,13 @@
             </el-card>
           </div>
         </transition>
+        <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
+          <div class="mb-[10px]" v-show="showSearch">
+            <el-card shadow="hover">
+              <el-button type="primary" icon="UploadFilled" @click="uploadDialog.visible = true">部署流程文件</el-button>
+            </el-card>
+          </div>
+        </transition>
         <el-card shadow="hover">
           <template #header>
             <el-row :gutter="10" class="mb8">
@@ -87,9 +94,6 @@
                   <el-col :span="1.5">
                     <el-button link type="primary" icon="Sort" @click="handleConvertToModel(scope.row)"> 转换模型 </el-button>
                   </el-col>
-                  <el-col :span="1.5">
-                    <el-button link type="primary" icon="Pointer" @click="openHandleStartWorkFlow(scope.row)">启动流程</el-button>
-                  </el-col>
                 </el-row>
               </template>
             </el-table-column>
@@ -107,13 +111,14 @@
     <!-- 预览图片或xml -->
     <process-preview ref="previewRef" :url="url" :type="type" />
 
-    <el-dialog v-model="dialog.visible" :title="dialog.title" width="30%">
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialog.visible = false">取消</el-button>
-          <el-button type="primary" @click="handleStartWorkFlow"> 提交流程 </el-button>
-        </span>
-      </template>
+    <!-- 部署文件 -->
+    <el-dialog v-if="uploadDialog.visible" v-model="uploadDialog.visible" :title="uploadDialog.title" width="30%">
+      <el-upload class="upload-demo" drag accept="application/zip,application/xml,.bpmn" :http-request="handerDeployProcessFile">
+        <el-icon class="UploadFilled"><upload-filled /></el-icon>
+        <div class="el-upload__text"><em>点击上传，选择BPMN流程文件</em></div>
+        <div class="el-upload__text">仅支持 .zip、.bpmn20.xml、bpmn 格式文件</div>
+        <div class="el-upload__text">PS:如若部署请部署从本项目模型管理导出的数据</div>
+      </el-upload>
     </el-dialog>
   </div>
 </template>
@@ -125,9 +130,9 @@ import {
   processDefinitionXml,
   deleteProcessDefinition,
   updateProcessDefState,
-  convertToModel
+  convertToModel,
+  deployProcessFile
 } from '@/api/workflow/processDefinition';
-import { startWorkFlow, completeTask } from '@/api/workflow/task';
 import { ComponentInternalInstance } from 'vue';
 import ProcessPreview from './components/processPreview.vue';
 import { listCategory } from '@/api/workflow/category';
@@ -161,6 +166,11 @@ const categoryTreeRef = ref(ElTree);
 const dialog = reactive<DialogOption>({
   visible: false,
   title: '启动'
+});
+
+const uploadDialog = reactive<DialogOption>({
+  visible: false,
+  title: '部署流程文件'
 });
 
 // 查询参数
@@ -295,30 +305,22 @@ const handleConvertToModel = async (row: any) => {
   proxy?.$modal.msgSuccess('操作成功');
 };
 
-/** 打开启动流程弹窗 */
-const openHandleStartWorkFlow = async (row: any) => {
-  submitFormData.value.processKey = row.key;
-  submitFormData.value.businessKey = Date.parse(new Date());
-  submitFormData.value.variables = {
-    userList:[1,2]
+//部署文件
+const handerDeployProcessFile = async (data: any) => {
+  let formData = new FormData();
+  if (queryParams.value.categoryCode === 'ALL') {
+    proxy?.$modal.msgError('顶级节点不可作为分类！');
+    return false;
   }
-  dialog.visible = true;
-};
-/** 启动流程 */
-const handleStartWorkFlow = async () => {
-  await proxy?.$modal.confirm('是否确认启动流程？');
-  startWorkFlow(submitFormData.value).then((response) => {
-    handleCompleteTask(response.data.taskId);
-  });
-};
-/** 办理流程 */
-const handleCompleteTask = async (taskId: string) => {
-  let param = {
-    taskId: taskId
-  };
-  await completeTask(param).finally(() => (loading.value = false));
-  getList();
-  proxy?.$modal.msgSuccess('操作成功');
-  dialog.visible = false;
+  if (!queryParams.value.categoryCode) {
+    proxy?.$modal.msgError('请选择左侧要上传的分类！');
+    return false;
+  }
+  formData.append('file', data.file);
+  formData.append('categoryCode', queryParams.value.categoryCode);
+  await deployProcessFile(formData);
+  uploadDialog.visible = false;
+  proxy?.$modal.msgSuccess('部署成功');
+  handleQuery();
 };
 </script>

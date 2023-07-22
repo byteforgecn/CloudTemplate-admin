@@ -71,4 +71,16 @@ export const convertToModel = (processDefinitionId: string) => {
   });
 };
 
+/**
+ * 通过zip或xml部署流程定义
+ * @returns
+ */
+export function deployProcessFile(data: any) {
+  return request({
+    url: '/workflow/processDefinition/deployByFile',
+    method: 'post',
+    data: data
+  })
+}
+
 

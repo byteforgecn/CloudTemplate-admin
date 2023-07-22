@@ -1,6 +1,6 @@
 <template>
-  <el-dialog v-model="dialog.visible" v-loading="loading" :title="dialog.title" width="50%" draggable :close-on-click-modal="false">
-    <el-form :model="form" label-width="120px">
+  <el-dialog v-model="dialog.visible" :title="dialog.title" width="50%" draggable :close-on-click-modal="false">
+    <el-form :model="form" label-width="120px" v-loading="loading">
       <el-form-item label="消息提醒">
         <el-checkbox-group v-model="form.messageType">
           <el-checkbox label="1" name="type" disabled>站内信</el-checkbox>
@@ -28,18 +28,13 @@ import { ComponentInternalInstance } from 'vue';
 import { ElForm } from 'element-plus';
 import { completeTask, backProcess, getBusinessStatus } from '@/api/workflow/task';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-const props = defineProps({
-  taskId: {
-    type: String,
-    required: true,
-    default: ''
-  }
-});
 
 //遮罩层
 const loading = ref(true);
 //流程状态
 const businessStatus = ref('');
+//任务id
+const taskId = ref('');
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -53,12 +48,15 @@ const form = ref<Record<string, any>>({
   messageType: ['1']
 });
 //打开弹窗
-const openDialog = (visible?: any) => {
+const openDialog = (visible?: any,id?: string) => {
+  taskId.value = id
   form.value.message = undefined;
   dialog.visible = visible;
+  loading.value = true;
   nextTick(() => {
-    getBusinessStatus(props.taskId).then((response) => {
+    getBusinessStatus(taskId.value).then((response) => {
       businessStatus.value = response.data;
+      loading.value = false;
     });
   });
 };
@@ -68,8 +66,9 @@ const emits = defineEmits(['submitCallback']);
 
 /** 办理流程 */
 const handleCompleteTask = async () => {
-  form.value.taskId = props.taskId;
+  form.value.taskId = taskId.value;
   await proxy?.$modal.confirm('是否确认提交？');
+  loading.value = true
   await completeTask(form.value).finally(() => (loading.value = false));
   dialog.visible = false;
   emits('submitCallback');
@@ -78,8 +77,9 @@ const handleCompleteTask = async () => {
 
 /** 驳回流程 */
 const handleBackProcess = async () => {
-  form.value.taskId = props.taskId;
+  form.value.taskId = taskId.value;
   await proxy?.$modal.confirm('是否确认驳回到申请人？');
+  loading.value = true
   await backProcess(form.value).finally(() => (loading.value = false));
   dialog.visible = false;
   emits('submitCallback');

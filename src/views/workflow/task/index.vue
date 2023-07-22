@@ -105,7 +105,7 @@
     <!-- 审批记录 -->
     <approvalRecord ref="approvalRecordRef" />
     <!-- 提交组件 -->
-    <submitVerify ref="submitVerifyRef" :taskId="taskId" @submitCallback="handleQuery" />
+    <submitVerify ref="submitVerifyRef" @submitCallback="handleQuery" />
   </div>
 </template>
 
@@ -133,8 +133,6 @@ const showSearch = ref(true);
 const total = ref(0);
 // 模型定义表格数据
 const taskList = ref([]);
-// 任务id
-const taskId = ref('');
 // 查询参数
 const queryParams = ref<Record<string, any>>({
   pageNum: 1,
@@ -202,8 +200,7 @@ const getFinishList = () => {
 //提交
 const submitVerifyOpen = async (id: string) => {
   if (submitVerifyRef.value) {
-    taskId.value = id;
-    submitVerifyRef.value.openDialog(true);
+    submitVerifyRef.value.openDialog(true,id);
   }
 };
 
