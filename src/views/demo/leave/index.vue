@@ -24,14 +24,6 @@
             <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['demo:leave:add']">新增</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['demo:leave:edit']">修改</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['demo:leave:remove']"
-              >删除</el-button
-            >
-          </el-col>
-          <el-col :span="1.5">
             <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['demo:leave:export']">导出</el-button>
           </el-col>
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
@@ -68,6 +60,9 @@
             <el-tooltip content="撤销" placement="top" v-if="scope.row.processInstanceVo.businessStatus === 'waiting'">
               <el-button link type="primary" icon="Promotion" @click="handleCancelProcessApply(scope.row.processInstanceVo.id)"></el-button>
             </el-tooltip>
+            <el-tooltip content="审批记录" placement="top" v-if="scope.row.processInstanceVo.businessStatus === 'waiting'">
+              <el-button link type="primary" icon="Document" @click="handleApprovalRecord(scope.row.processInstanceVo.id)"></el-button>
+            </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
@@ -97,6 +92,8 @@
     </el-dialog>
     <!-- 提交组件 -->
     <submitVerify ref="submitVerifyRef" @submitCallback="submitCallback" />
+    <!-- 审批记录 -->
+    <approvalRecord ref="approvalRecordRef" />
   </div>
 </template>
 
@@ -108,6 +105,7 @@ import { ComponentInternalInstance } from 'vue';
 import { ElForm } from 'element-plus';
 import { startWorkFlow } from '@/api/workflow/task';
 import SubmitVerify from '@/components/Process/submitVerify.vue';
+import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -121,6 +119,8 @@ const multiple = ref(true);
 const total = ref(0);
 //提交组件
 const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
+  //审批记录组件
+const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 
 const queryFormRef = ref(ElForm);
 const leaveFormRef = ref(ElForm);
@@ -153,8 +153,7 @@ const data = reactive<PageData<LeaveForm, LeaveQuery>>({
   rules: {
     id: [{ required: true, message: '主键不能为空', trigger: 'blur' }],
     title: [{ required: true, message: '标题不能为空', trigger: 'blur' }],
-    leaveDays: [{ required: true, message: '请假天数不能为空', trigger: 'blur' }],
-    remark: [{ required: true, message: '备注不能为空', trigger: 'blur' }]
+    leaveDays: [{ required: true, message: '请假天数不能为空', trigger: 'blur' }]
   }
 });
 
@@ -278,6 +277,12 @@ const handleStartWorkFlow = async (data: any) => {
       submitVerifyRef.value.openDialog(true, response.data.taskId);
     }
   });
+};
+//审批记录
+const handleApprovalRecord = (id: string) => {
+  if (approvalRecordRef.value) {
+    approvalRecordRef.value.init(id);
+  }
 };
 //提交回调
 const submitCallback = async (data: any) => {
