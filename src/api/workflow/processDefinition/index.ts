@@ -3,7 +3,7 @@ const baseUrl = import.meta.env.VITE_APP_BASE_API;
 import { getToken } from '@/utils/auth';
 
 /**
- * 获取审批记录
+ * 获取流程定义列表
  * @param processInstanceId 流程实例id
  * @returns
  */
@@ -14,12 +14,30 @@ export const listProcessDefinition = (query: object) => {
     params: query
   });
 };
+/**
+ * 按照流程定义key获取流程定义
+ * @param processInstanceId 流程实例id
+ * @returns
+ */
+export const getProcessDefinitionListByKey = (key: string) => {
+  return request({
+    url: `/workflow/processDefinition/getProcessDefinitionListByKey/${key}`,
+    method: 'get'
+  });
+};
 
 /**
  * 通过流程定义id获取流程图
  */
 export const processDefinitionImage = (processDefinitionId: string) => {
-  return baseUrl + `/workflow/processDefinition/processDefinitionImage/${processDefinitionId}` + '?Authorization=Bearer ' + getToken() + '&t' + Math.random()
+  return (
+    baseUrl +
+    `/workflow/processDefinition/processDefinitionImage/${processDefinitionId}` +
+    '?Authorization=Bearer ' +
+    getToken() +
+    '&t' +
+    Math.random()
+  );
 };
 
 /**
@@ -80,7 +98,5 @@ export function deployProcessFile(data: any) {
     url: '/workflow/processDefinition/deployByFile',
     method: 'post',
     data: data
-  })
+  });
 }
-
-

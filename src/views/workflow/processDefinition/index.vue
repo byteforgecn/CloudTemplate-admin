@@ -94,6 +94,11 @@
                   <el-col :span="1.5">
                     <el-button link type="primary" icon="Sort" @click="handleConvertToModel(scope.row)"> 转换模型 </el-button>
                   </el-col>
+                  <el-col :span="1.5">
+                    <el-button link type="primary" icon="Document" @click="getProcessDefinitionHitoryList(scope.row.id,scope.row.key)">
+                      历史版本
+                    </el-button>
+                  </el-col>
                 </el-row>
               </template>
             </el-table-column>
@@ -120,6 +125,55 @@
         <div class="el-upload__text">PS:如若部署请部署从本项目模型管理导出的数据</div>
       </el-upload>
     </el-dialog>
+
+    <!-- 历史版本 -->
+    <el-dialog v-if="processDefinitionDialog.visible" v-model="processDefinitionDialog.visible" :title="processDefinitionDialog.title" width="70%">
+      <el-table v-loading="loading" :data="processDefinitionHistoryList" @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
+        <el-table-column fixed align="center" prop="name" label="流程定义名称"></el-table-column>
+        <el-table-column align="center" prop="key" label="标识Key"></el-table-column>
+        <el-table-column align="center" prop="version" label="版本号" width="90">
+          <template #default="scope"> v{{ scope.row.version }}.0</template>
+        </el-table-column>
+        <el-table-column align="center" prop="resourceName" label="流程XML" min-width="80" :show-overflow-tooltip="true">
+          <template #default="scope">
+            <el-link type="primary" @click="clickPreviewXML(scope.row.id)">{{ scope.row.resourceName }}</el-link>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="diagramResourceName" label="流程图片" min-width="80" :show-overflow-tooltip="true">
+          <template #default="scope">
+            <el-link type="primary" @click="clickPreviewImg(scope.row.id)">{{ scope.row.diagramResourceName }}</el-link>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="suspensionState" label="状态" min-width="70">
+          <template #default="scope">
+            <el-tag type="success" v-if="scope.row.suspensionState==1">激活</el-tag>
+            <el-tag type="danger" v-else>挂起</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="deploymentTime" label="部署时间" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column fixed="right" label="操作" align="center" width="200" class-name="small-padding fixed-width">
+          <template #default="scope">
+            <el-row :gutter="10" class="mb8">
+              <el-col :span="1.5">
+                <el-button link type="primary" :icon="scope.row.suspensionState === 1?'Lock':'Unlock'" @click="handleProcessDefState(scope.row)">
+                  {{ scope.row.suspensionState === 1?"挂起流程":"激活流程" }}
+                </el-button>
+              </el-col>
+              <el-col :span="1.5">
+                <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
+              </el-col>
+            </el-row>
+            <el-row :gutter="10" class="mb8">
+              <el-col :span="1.5">
+                <el-button link type="primary" icon="Sort" @click="handleConvertToModel(scope.row)"> 转换模型 </el-button>
+              </el-col>
+            </el-row>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -131,7 +185,8 @@ import {
   deleteProcessDefinition,
   updateProcessDefState,
   convertToModel,
-  deployProcessFile
+  deployProcessFile,
+  getProcessDefinitionListByKey
 } from '@/api/workflow/processDefinition';
 import { ComponentInternalInstance } from 'vue';
 import ProcessPreview from './components/processPreview.vue';
@@ -156,21 +211,22 @@ const single = ref(true);
 const multiple = ref(true);
 const showSearch = ref(true);
 const total = ref(0);
-const processDefinitionList = ref<Record<string, any>>([]);
+const processDefinitionList = ref<Array<any>>([]);
+const processDefinitionHistoryList = ref<Array<any>>([]);
 const url = ref<Array<string>>([]);
 const type = ref<string>('');
 const categoryOptions = ref<CategoryOption[]>([]);
 const categoryName = ref('');
 const categoryTreeRef = ref(ElTree);
 
-const dialog = reactive<DialogOption>({
-  visible: false,
-  title: '启动'
-});
-
 const uploadDialog = reactive<DialogOption>({
   visible: false,
   title: '部署流程文件'
+});
+
+const processDefinitionDialog = reactive<DialogOption>({
+  visible: false,
+  title: '历史版本'
 });
 
 // 查询参数
@@ -180,12 +236,6 @@ const queryParams = ref<Record<string, any>>({
   name: undefined,
   key: undefined,
   categoryCode: undefined
-});
-
-const submitFormData = ref<Record<string, any>>({
-  businessKey: '',
-  processKey: '',
-  variables: {}
 });
 
 onMounted(() => {
@@ -253,6 +303,18 @@ const getList = () => {
     loading.value = false;
   });
 };
+//获取历史流程定义
+const getProcessDefinitionHitoryList = (id:string,key:string) => {
+  processDefinitionDialog.visible = true
+  loading.value = true;
+  getProcessDefinitionListByKey(key).then((resp) => {
+    if(resp.data && resp.data.length > 0){
+        processDefinitionHistoryList.value = resp.data.filter((item:any)=>item.id !== id);
+    }
+    loading.value = false;
+  });
+};
+
 //预览图片
 const clickPreviewImg = (id: string) => {
   if (previewRef.value) {
