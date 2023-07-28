@@ -57,7 +57,7 @@
     </el-card>
     <!-- 添加或修改流程分类对话框 -->
     <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>
-      <el-form ref="categoryFormRef" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="categoryFormRef" :model="form" :rules="rules" label-width="80px" v-loading="loading">
         <el-form-item label="父级分类" prop="parentId">
           <el-tree-select
             v-model="form.parentId"
@@ -75,7 +75,7 @@
           <el-input v-model="form.categoryCode" placeholder="请输入分类编码" />
         </el-form-item>
         <el-form-item label="排序" prop="sortNum">
-          <el-input-number v-model="form.sortNum" placeholder="请输入排序" controls-position="right" :min="0"/>
+          <el-input-number v-model="form.sortNum" placeholder="请输入排序" controls-position="right" :min="0" />
         </el-form-item>
       </el-form>
       <template #footer>

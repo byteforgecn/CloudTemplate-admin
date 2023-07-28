@@ -32,9 +32,9 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 //遮罩层
 const loading = ref(true);
 //流程状态
-const businessStatus = ref('');
+const businessStatus = ref<string>('');
 //任务id
-const taskId = ref('');
+const taskId = ref<string>('');
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -93,4 +93,3 @@ defineExpose({
   openDialog
 });
 </script>
-  

@@ -1,19 +1,19 @@
 <template>
-  <el-dialog v-model="visible" draggable title="审批记录" :width="width" :height="height" append-to-body :close-on-click-modal="false">
+  <el-dialog v-model="visible" draggable title="审批记录" :width="props.width" :height="props.height" append-to-body :close-on-click-modal="false">
     <div v-loading="loading">
       <div style="width: 100%;height: 300px;overflow: auto;position: relative;">
         <div
           v-for="(graphic, index) in graphicInfoVos"
           :key="index"
-          :style="{ 
-           position: 'absolute',
-           left: `${graphic.x}px`,
-           top: `${graphic.y}px`,
-           width: `${graphic.width}px`,
-           height: `${graphic.height}px`,
-           cursor: 'pointer',
-           zIndex: 99
-         }"
+          :style="{
+                    position: 'absolute',
+                    left: `${graphic.x}px`,
+                    top: `${graphic.y}px`,
+                    width: `${graphic.width}px`,
+                    height: `${graphic.height}px`,
+                    cursor: 'pointer',
+                    zIndex: 99
+                }"
           @mouseover="handleMouseOver(graphic)"
           @mouseleave="handleMouseLeave()"
         ></div>
@@ -21,14 +21,14 @@
         <div
           v-show="popupVisible"
           class="triangle"
-          :style="{ 
-              position: 'absolute',
-              left: `${graphicX}px`,
-              top: `${graphicY}px`,
-              backgroundColor: '#fff',
-              padding: '10px',
-              zIndex: 100
-            }"
+          :style="{
+                    position: 'absolute',
+                    left: `${graphicX}px`,
+                    top: `${graphicY}px`,
+                    backgroundColor: '#fff',
+                    padding: '10px',
+                    zIndex: 100
+                }"
         >
           <p>审批人员: {{ nodeInfo.nickName }}</p>
           <p>节点状态：{{ nodeInfo.status }}</p>
@@ -46,7 +46,7 @@
             <el-table-column prop="nickName" label="办理人" sortable align="center"></el-table-column>
             <el-table-column label="状态" sortable align="center">
               <template #default="scope">
-                <el-tag type="success">{{scope.row.statusName}}</el-tag>
+                <el-tag type="success">{{ scope.row.statusName }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column prop="comment" label="审批意见" sortable align="center"></el-table-column>
@@ -59,85 +59,87 @@
     </div>
   </el-dialog>
 </template>
-<script>
+<script lang="ts" setup>
 import { getHistoryProcessImage, getHistoryRecord } from '@/api/workflow/processInstance';
-export default {
-  props: {
+import { ref } from 'vue';
+const props = defineProps({
     width: {
-      type: String,
-      default: '70%'
+        type: String,
+        default: '70%'
     },
     height: {
-      type: String,
-      default: '100%'
+        type: String,
+        default: '100%'
     }
-  },
-  data() {
-    return {
-      loading: false,
-      src: '',
-      visible: false,
-      historyList: [],
-      deleteReason: '',
-      graphicInfoVos: [],
-      nodeListInfo: [],
-      popupVisible: false,
-      nodeInfo: {},
-      graphicX: '',
-      graphicY: ''
-    };
-  },
-  methods: {
-    init(processInstanceId) {
-      this.visible = true;
-      this.loading = true;
-      this.historyList = [];
-      this.graphicInfoVos = [];
-      this.src = getHistoryProcessImage(processInstanceId);
-      getHistoryRecord(processInstanceId).then((response) => {
-        this.historyList = response.data.historyRecordList;
-        this.graphicInfoVos = response.data.graphicInfoVos;
-        this.nodeListInfo = response.data.nodeListInfo;
-        this.deleteReason = response.data.deleteReason;
-        this.loading = false;
-      });
-    },
-    handleMouseOver(graphic) {
-      this.graphicX = graphic.x + graphic.width + 10;
-      this.graphicY = graphic.y - graphic.height + -10;
-      this.nodeInfo = {};
-      if (this.nodeListInfo && this.nodeListInfo.length > 0) {
-        let info = this.nodeListInfo.find((e) => e.taskDefinitionKey == graphic.nodeId);
+});
+const loading = ref(false);
+const src = ref('');
+const visible = ref(false);
+const historyList = ref<Array<any>>([]);
+const deleteReason = ref<string>('');
+const graphicInfoVos = ref<Array<any>>([]);
+const nodeListInfo = ref<Array<any>>([]);
+const popupVisible = ref(false);
+const nodeInfo = ref<any>({});
+const graphicX = ref<number | string>(0);
+const graphicY = ref<number | string>(0);
+//初始化查询审批记录
+const init = async (processInstanceId: string) => {
+    visible.value = true;
+    loading.value = true;
+    historyList.value = [];
+    graphicInfoVos.value = [];
+    src.value = getHistoryProcessImage(processInstanceId);
+    getHistoryRecord(processInstanceId).then((response) => {
+        historyList.value = response.data.historyRecordList;
+        graphicInfoVos.value = response.data.graphicInfoVos;
+        nodeListInfo.value = response.data.nodeListInfo;
+        deleteReason.value = response.data.deleteReason;
+        loading.value = false;
+    });
+}
+//悬浮事件
+const handleMouseOver = async (graphic: any) => {
+    graphicX.value = graphic.x + graphic.width + 10;
+    graphicY.value = graphic.y - graphic.height + -10;
+    nodeInfo.value = {};
+    if (nodeListInfo.value && nodeListInfo.value.length > 0) {
+        let info = nodeListInfo.value.find((e: any) => e.taskDefinitionKey == graphic.nodeId);
         if (info) {
-          this.nodeInfo = {
-            nickName: info.nickName,
-            status: info.status,
-            startTime: info.startTime,
-            endTime: info.endTime,
-            runDuration: info.runDuration
-          };
-          this.popupVisible = true;
+            nodeInfo.value = {
+                nickName: info.nickName,
+                status: info.status,
+                startTime: info.startTime,
+                endTime: info.endTime,
+                runDuration: info.runDuration
+            };
+            popupVisible.value = true;
         }
-      }
-    },
-    handleMouseLeave() {
-      this.popupVisible = false;
     }
-  }
-};
+}
+//关闭
+const handleMouseLeave = async () => {
+    popupVisible.value = false;
+}
+/**
+ * 对外暴露子组建方法
+ */
+ defineExpose({
+  init
+});
 </script>
 <style scoped>
 .triangle {
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-  border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
 }
 
 .triangle::after {
-  content: ' ';
-  position: absolute;
-  top: 8em;
-  right: 215px;
-  border: 15px solid;
-  border-color: transparent #fff transparent transparent;
+    content: ' ';
+    position: absolute;
+    top: 8em;
+    right: 215px;
+    border: 15px solid;
+    border-color: transparent #fff transparent transparent;
 }
 </style>
