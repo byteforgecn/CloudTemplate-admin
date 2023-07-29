@@ -40,6 +40,8 @@ flowableModule.config(['$httpProvider', function($httpProvider) {
     $httpProvider.defaults.headers.get['Cache-Control'] = 'no-cache, no-store, must-revalidate';
     $httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
     $httpProvider.defaults.headers.get['Expires'] = '0';
+    $httpProvider.defaults.headers.get['Authorization'] = 'Bearer '+window.parent.this.token;
+    $httpProvider.defaults.headers.get['clientid'] = window.parent.this.clientid;
 
     $httpProvider.interceptors.push('NotPermittedInterceptor');
 

@@ -28,7 +28,10 @@ export default {
     },
     token() {
       return getToken();
-    }
+    },
+    clientid() {
+      return import.meta.env.VITE_APP_CLIENT_ID;
+    },
   },
   mounted() {
     //全局存入当前vue实例

@@ -21,7 +21,7 @@ FLOWABLE.APP_URL = {
     /* ACCOUNT URLS */
 
     getAccountUrl: function () {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/account?Authorization=Bearer '+window.parent.this.token;
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/account';
     },
 
     getLogoutUrl: function () {
@@ -35,19 +35,19 @@ FLOWABLE.APP_URL = {
     },
 
     getModelUrl: function (modelId) {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId+'?Authorization=Bearer '+window.parent.this.token;
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId+'';
     },
 
     getModelModelJsonUrl: function (modelId) {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId + '/model-json?Authorization=Bearer '+window.parent.this.token;
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId + '/model-json';
     },
 
     getModelBpmn20ExportUrl: function (modelId) {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId + '/bpmn20?version=' + Date.now()+'&Authorization=Bearer '+window.parent.this.token;
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId + '/bpmn20?version=' + Date.now();
     },
 
     getCloneModelsUrl: function (modelId) {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId + '/clone'+'?Authorization=Bearer '+window.parent.this.token;
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/models/' + modelId + '/clone'+'';
     },
 
     getModelHistoriesUrl: function (modelId) {
@@ -251,15 +251,15 @@ FLOWABLE.APP_URL = {
     /* OTHER URLS */
 
     getEditorUsersUrl: function () {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/editor-users?Authorization=Bearer '+window.parent.this.token;
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/editor-users';
     },
 
     getEditorGroupsUrl: function () {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/editor-groups?Authorization=Bearer '+window.parent.this.token;
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/editor-groups';
     },
 
     getAboutInfoUrl: function () {
-        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/about-info?Authorization=Bearer '+window.parent.this.token;
+        return FLOWABLE.CONFIG.contextModelerRestRoot + '/rest/about-info';
     }
 
 };

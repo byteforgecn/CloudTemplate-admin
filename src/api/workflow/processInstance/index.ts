@@ -32,7 +32,10 @@ export const getProcessInstanceFinishByPage = (query: object) => {
  * 通过流程实例id获取历史流程图
  */
 export const getHistoryProcessImage = (processInstanceId: string) => {
-  return baseUrl + `/workflow/processInstance/getHistoryProcessImage/${processInstanceId}` + '?Authorization=Bearer ' + getToken() + '&t' + Math.random()
+  return request({
+    url: `/workflow/processInstance/getHistoryProcessImage/${processInstanceId}` + '?t' + Math.random(),
+    method: 'get'
+  });
 };
 
 /**
