@@ -1,20 +1,22 @@
 <template>
   <div class="p-2">
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div class="search" v-show="showSearch">
-        <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
-          <el-form-item label="树节点名" prop="treeName">
-            <el-input v-model="queryParams.treeName" placeholder="请输入树节点名" clearable @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-          </el-form-item>
-        </el-form>
+      <div class="mb-[10px]" v-show="showSearch">
+        <el-card shadow="hover">
+          <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
+            <el-form-item label="树节点名" prop="treeName">
+              <el-input v-model="queryParams.treeName" placeholder="请输入树节点名" clearable @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
       </div>
     </transition>
 
-    <el-card shadow="never">
+    <el-card shadow="hover">
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
@@ -89,8 +91,6 @@
 <script setup name="Tree" lang="ts">
 import { listTree, getTree, delTree, addTree, updateTree } from "@/api/demo/tree";
 import { TreeVO, TreeQuery, TreeForm } from '@/api/demo/tree/types';
-import { ComponentInternalInstance } from 'vue';
-import { ElForm, ElTable } from 'element-plus';
 
 
 type TreeOption = {
@@ -109,9 +109,9 @@ const showSearch = ref(true);
 const isExpandAll = ref(true);
 const loading = ref(false);
 
-const queryFormRef = ref(ElForm);
-const treeFormRef = ref(ElForm);
-const treeTableRef = ref(ElTable)
+const queryFormRef = ref<ElFormInstance>();
+const treeFormRef = ref<ElFormInstance>();
+const treeTableRef = ref<ElTableInstance>()
 
 const dialog = reactive<DialogOption>({
     visible: false,
@@ -185,7 +185,7 @@ const cancel = () => {
 // 表单重置
 const reset = () => {
   form.value = {...initFormData}
-  treeFormRef.value.resetFields();
+  treeFormRef.value?.resetFields();
 }
 
 /** 搜索按钮操作 */
@@ -195,23 +195,21 @@ const handleQuery = () => {
 
 /** 重置按钮操作 */
 const resetQuery = () => {
-  queryFormRef.value.resetFields();
+  queryFormRef.value?.resetFields();
   handleQuery();
 }
 
 /** 新增按钮操作 */
 const handleAdd = (row?: TreeVO) => {
+  reset();
+  getTreeselect();
+  if (row && row.id) {
+    form.value.parentId = row.id;
+  } else {
+    form.value.parentId = 0;
+  }
   dialog.visible = true;
   dialog.title = "添加测试树";
-  nextTick(() => {
-    reset();
-    getTreeselect();
-    if (row != null && row.id) {
-      form.value.parentId = row.id;
-    } else {
-      form.value.parentId = 0;
-    }
-  });
 }
 
 /** 展开/折叠操作 */
@@ -223,31 +221,27 @@ const handleToggleExpandAll = () => {
 /** 展开/折叠操作 */
 const toggleExpandAll = (data: TreeVO[], status: boolean) => {
   data.forEach((item) => {
-    treeTableRef.value.toggleRowExpansion(item, status)
+    treeTableRef.value?.toggleRowExpansion(item, status)
     if (item.children && item.children.length > 0) toggleExpandAll(item.children, status)
   })
 }
 
 /** 修改按钮操作 */
-const handleUpdate = (row: TreeVO) => {
-  loading.value = true;
+const handleUpdate = async (row: TreeVO) => {
+  reset();
+  await getTreeselect();
+  if (row) {
+    form.value.parentId = row.id;
+  }
+  const res = await getTree(row.id);
+  Object.assign(form.value, res.data);
   dialog.visible = true;
   dialog.title = "修改测试树";
-  nextTick(async () => {
-    reset();
-    await getTreeselect();
-    if (row != null) {
-      form.value.parentId = row.id;
-    }
-    const res = await getTree(row.id);
-    loading.value = false;
-    Object.assign(form.value, res.data);
-  });
 }
 
 /** 提交按钮 */
 const submitForm = () => {
-  treeFormRef.value.validate(async (valid: boolean) => {
+  treeFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
       buttonLoading.value = true;
       if (form.value.id) {
@@ -257,7 +251,7 @@ const submitForm = () => {
       }
       proxy?.$modal.msgSuccess("操作成功");
       dialog.visible = false;
-      getList();
+      await getList();
     }
   });
 }

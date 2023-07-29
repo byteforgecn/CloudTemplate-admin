@@ -21,7 +21,7 @@
           * 分布式锁 Lock4j 注解锁、工具锁 多种多样<br />
           * 分布式幂等 Lock4j 基于分布式锁实现<br />
           * 分布式链路追踪 SkyWalking 支持链路追踪、网格分析、度量聚合、可视化<br />
-          * 分布式任务调度 Xxl-Job 高性能 高可靠 易扩展<br />
+          * 分布式任务调度 PowerJob 高性能 高可靠 易扩展<br />
           * 文件存储 Minio 本地存储<br />
           * 文件存储 七牛、阿里、腾讯 云存储<br />
           * 监控框架 SpringBoot-Admin 全方位服务监控<br />
@@ -33,14 +33,14 @@
           * 部署方式 Docker 容器编排 一键部署业务集群<br />
           * 国际化 SpringMessage Spring标准国际化方案<br />
         </p>
-        <p><b>当前版本:</b> <span>v5.0.0</span></p>
+        <p><b>当前版本:</b> <span>v5.1.0</span></p>
         <p>
           <el-tag type="danger">&yen;免费开源</el-tag>
         </p>
         <p>
           <el-button type="primary" icon="Cloudy" plain @click="goTarget('https://gitee.com/dromara/RuoYi-Vue-Plus')">访问码云</el-button>
           <el-button type="primary" icon="Cloudy" plain @click="goTarget('https://github.com/dromara/RuoYi-Vue-Plus')">访问GitHub</el-button>
-          <el-button type="primary" icon="Cloudy" plain @click="goTarget('https://javalionli.gitee.io/plus-doc/#/ruoyi-vue-plus/changlog')"
+          <el-button type="primary" icon="Cloudy" plain @click="goTarget('https://plus-doc.dromara.org/#/ruoyi-vue-plus/changlog')"
             >更新日志</el-button
           >
         </p>
@@ -78,14 +78,14 @@
           * 分布式监控 Prometheus、Grafana 全方位性能监控<br />
           * 其余与 Vue 版本一致<br />
         </p>
-        <p><b>当前版本:</b> <span>v2.0.0</span></p>
+        <p><b>当前版本:</b> <span>v2.1.0</span></p>
         <p>
           <el-tag type="danger">&yen;免费开源</el-tag>
         </p>
         <p>
           <el-button type="primary" icon="Cloudy" plain @click="goTarget('https://gitee.com/dromara/RuoYi-Cloud-Plus')">访问码云</el-button>
           <el-button type="primary" icon="Cloudy" plain @click="goTarget('https://github.com/dromara/RuoYi-Cloud-Plus')">访问GitHub</el-button>
-          <el-button type="primary" icon="Cloudy" plain @click="goTarget('https://javalionli.gitee.io/plus-doc/#/ruoyi-cloud-plus/changlog')"
+          <el-button type="primary" icon="Cloudy" plain @click="goTarget('https://plus-doc.dromara.org/#/ruoyi-cloud-plus/changlog')"
             >更新日志</el-button
           >
         </p>
