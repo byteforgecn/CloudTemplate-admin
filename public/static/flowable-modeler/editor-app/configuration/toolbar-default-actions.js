@@ -399,8 +399,12 @@ angular.module('flowableModeler').controller('SaveModelCtrl', [ '$rootScope', '$
         $http({    method: 'POST',
             data: params,
             ignoreErrors: true,
-            headers: {'Accept': 'application/json',
-                      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+            headers: {
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                      'Authorization': 'Bearer '+window.parent.this.token,
+                      'clientid': window.parent.this.clientid
+                     },
             transformRequest: function (obj) {
                 var str = [];
                 for (var p in obj) {
@@ -415,6 +419,11 @@ angular.module('flowableModeler').controller('SaveModelCtrl', [ '$rootScope', '$
                     alert(data.msg)
                     $scope.status.loading = false;
                     return false
+                }
+                if(data.code === 200){
+                    alert("保存成功！")
+                    $scope.status.loading = false;
+                    return true
                 }
                 editorManager.handleEvents({
                     type: ORYX.CONFIG.EVENT_SAVED
