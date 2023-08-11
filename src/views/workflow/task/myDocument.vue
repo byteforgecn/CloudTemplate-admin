@@ -102,7 +102,7 @@
     <!-- 审批记录 -->
     <approvalRecord ref="approvalRecordRef" />
     <!-- 提交组件 -->
-    <submitVerify ref="submitVerifyRef" :taskId="taskId" @submitCallback="getList"/>
+    <submitVerify ref="submitVerifyRef" @submitCallback="getList" />
   </div>
 </template>
 
@@ -147,8 +147,6 @@ type CategoryOption = {
 };
 
 const tab = ref('running');
-// 任务id
-const taskId = ref('');
 // 查询参数
 const queryParams = ref<Record<string, any>>({
   pageNum: 1,
@@ -254,8 +252,7 @@ const handleCancelProcessApply = async (row: any) => {
 //提交
 const submitVerifyOpen = async (id: string) => {
   if (submitVerifyRef.value) {
-    taskId.value = id;
-    submitVerifyRef.value.openDialog(true);
+    submitVerifyRef.value.openDialog(true,id);
   }
 };
 </script>
