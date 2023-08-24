@@ -94,6 +94,15 @@
                 </el-row>
                 <el-row :gutter="10" class="mb8" v-if="tab === 'running'">
                   <el-col :span="1.5">
+                    <el-button
+                      type="text"
+                      size="small"
+                      icon="el-icon-thumb"
+                      @click="getProcessDefinitionHitoryList(scope.row.processDefinitionId,scope.row.processDefinitionKey)"
+                      >切换版本</el-button
+                    >
+                  </el-col>
+                  <el-col :span="1.5">
                     <el-popover trigger="click" :ref="`popoverRef${scope.$index}`" placement="left" :width="300">
                       <el-input resize="none" v-model="deleteReason" :rows="3" type="textarea" placeholder="请输入作废原因" />
                       <div style="text-align: right; margin: 5px 0px 0px 0px">
@@ -119,6 +128,28 @@
         </el-card>
       </el-col>
     </el-row>
+    <el-dialog v-if="processDefinitionDialog.visible" v-model="processDefinitionDialog.visible" :title="processDefinitionDialog.title" width="70%">
+      <el-table v-loading="loading" :data="processDefinitionHistoryList">
+        <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
+        <el-table-column fixed align="center" prop="name" label="流程定义名称"></el-table-column>
+        <el-table-column align="center" prop="key" label="标识Key"></el-table-column>
+        <el-table-column align="center" prop="version" label="版本号" width="90">
+          <template #default="scope"> v{{ scope.row.version }}.0</template>
+        </el-table-column>
+        <el-table-column align="center" prop="suspensionState" label="状态" min-width="70">
+          <template #default="scope">
+            <el-tag type="success" v-if="scope.row.suspensionState==1">激活</el-tag>
+            <el-tag type="danger" v-else>挂起</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="deploymentTime" label="部署时间" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column fixed="right" label="操作" align="center" width="200" class-name="small-padding fixed-width">
+          <template #default="scope">
+            <el-button link type="primary" icon="Sort" @click="handleChange(scope.row.id)">切换</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
     <!-- 审批记录 -->
     <approvalRecord ref="approvalRecordRef" />
   </div>
@@ -132,11 +163,16 @@ import {
   deleteFinishProcessAndHisInst,
   deleteRuntimeProcessInst
 } from '@/api/workflow/processInstance';
+import {
+  getProcessDefinitionListByKey,
+  migrationProcessDefinition
+} from '@/api/workflow/processDefinition';
 import { ComponentInternalInstance } from 'vue';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 import { listCategory } from "@/api/workflow/category";
 import { ElTree } from 'element-plus';
 import { CategoryVO } from '@/api/workflow/category/types';
+import { string } from 'vue-types';
 //审批记录组件
 const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -154,12 +190,19 @@ const multiple = ref(true);
 const showSearch = ref(true);
 // 总条数
 const total = ref(0);
+// 流程定义id
+const processDefinitionId = ref<string>('');
 // 模型定义表格数据
 const processInstanceList = ref([]);
-
+const processDefinitionHistoryList = ref<Array<any>>([]);
 const categoryOptions = ref<CategoryOption[]>([]);
 const categoryName = ref('');
 const categoryTreeRef = ref(ElTree);
+
+const processDefinitionDialog = reactive<DialogOption>({
+  visible: false,
+  title: '流程定义'
+});
 
 type CategoryOption = {
   categoryCode: string;
@@ -300,5 +343,28 @@ const handleInvalid = async (row: any) => {
 };
 const cancelPopover = async (index: any) => {
   (proxy?.$refs[`popoverRef${index}`] as any).hide(); //关闭弹窗
+};
+//获取流程定义
+const getProcessDefinitionHitoryList = (id:string,key:string) => {
+  processDefinitionDialog.visible = true
+  processDefinitionId.value = id
+  loading.value = true;
+  getProcessDefinitionListByKey(key).then((resp) => {
+    if(resp.data && resp.data.length > 0){
+        processDefinitionHistoryList.value = resp.data.filter((item:any)=>item.id !== id);
+    }
+    loading.value = false;
+  });
+};
+//切换流程版本
+const handleChange = async (id:string) => {
+  await proxy?.$modal.confirm('是否确认切换？');
+  loading.value = true;
+  migrationProcessDefinition(processDefinitionId.value,id).then((resp) => {
+    proxy?.$modal.msgSuccess('操作成功');
+    getProcessInstanceRunningList();
+    processDefinitionDialog.visible = false
+    loading.value = false;
+  });
 };
 </script>

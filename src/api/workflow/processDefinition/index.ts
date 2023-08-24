@@ -100,3 +100,16 @@ export function deployProcessFile(data: any) {
     data: data
   });
 }
+
+/**
+ * 迁移流程
+ * @param currentProcessDefinitionId
+ * @param fromProcessDefinitionId
+ * @returns
+ */
+export const migrationProcessDefinition = (currentProcessDefinitionId: string, fromProcessDefinitionId: string) => {
+  return request({
+    url: `/workflow/processDefinition/migrationProcessDefinition/${currentProcessDefinitionId}/${fromProcessDefinitionId}`,
+    method: 'put'
+  });
+};
