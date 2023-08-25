@@ -1,40 +1,30 @@
 <template>
-  <el-dialog v-model="visible" draggable :title="title" :width="width" :height="height" append-to-body :close-on-click-modal="false">
+  <el-dialog v-model="visible" draggable :title="title" :width="width" :height="height" append-to-body
+    :close-on-click-modal="false">
     <div class="p-2" v-if="multiInstance === 'add'">
       <el-row :gutter="20">
         <!-- 部门树 -->
         <el-col :lg="4" :xs="24" style="">
           <el-card shadow="hover">
             <el-input v-model="deptName" placeholder="请输入部门名称" prefix-icon="Search" clearable />
-            <el-tree
-              class="mt-2"
-              ref="deptTreeRef"
-              node-key="id"
-              :data="deptOptions"
-              :props="{ label: 'label', children: 'children' }"
-              :expand-on-click-node="false"
-              :filter-node-method="filterNode"
-              highlight-current
-              default-expand-all
-              @node-click="handleNodeClick"
-            ></el-tree>
+            <el-tree class="mt-2" ref="deptTreeRef" node-key="id" :data="deptOptions"
+              :props="{ label: 'label', children: 'children' }" :expand-on-click-node="false"
+              :filter-node-method="filterNode" highlight-current default-expand-all
+              @node-click="handleNodeClick"></el-tree>
           </el-card>
         </el-col>
         <el-col :lg="20" :xs="24">
-          <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
+          <transition :enter-active-class="proxy?.animate.searchAnimate.enter"
+            :leave-active-class="proxy?.animate.searchAnimate.leave">
             <div class="search" v-show="showSearch">
               <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
                 <el-form-item label="用户名称" prop="userName">
-                  <el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
+                  <el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable style="width: 240px"
+                    @keyup.enter="handleQuery" />
                 </el-form-item>
                 <el-form-item label="手机号码" prop="phonenumber">
-                  <el-input
-                    v-model="queryParams.phonenumber"
-                    placeholder="请输入手机号码"
-                    clearable
-                    style="width: 240px"
-                    @keyup.enter="handleQuery"
-                  />
+                  <el-input v-model="queryParams.phonenumber" placeholder="请输入手机号码" clearable style="width: 240px"
+                    @keyup.enter="handleQuery" />
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" @click="handleQuery" icon="Search">搜索</el-button>
@@ -51,7 +41,8 @@
               </el-row>
             </template>
 
-            <el-table v-loading="loading" :data="userList" ref="multipleTableRef" row-key="userId" @selection-change="handleSelectionChange">
+            <el-table v-loading="loading" :data="userList" ref="multipleTableRef" row-key="userId"
+              @selection-change="handleSelectionChange">
               <el-table-column type="selection" width="50" align="center" />
               <el-table-column label="用户编号" align="center" key="userId" prop="userId" />
               <el-table-column label="用户名称" align="center" key="userName" prop="userName" :show-overflow-tooltip="true" />
@@ -65,17 +56,12 @@
               </el-table-column>
             </el-table>
 
-            <pagination
-              v-show="total > 0"
-              :total="total"
-              v-model:page="queryParams.pageNum"
-              v-model:limit="queryParams.pageSize"
-              @pagination="handleQuery"
-            />
+            <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
+              v-model:limit="queryParams.pageSize" @pagination="handleQuery" />
           </el-card>
           <el-card shadow="hover">
-            <el-tag v-for="(user,index) in chooseUserList" :key="user.userId" style="margin:2px" closable @close="handleCloseTag(user,index)"
-              >{{user.userName}}
+            <el-tag v-for="(user, index) in chooseUserList" :key="user.userId" style="margin:2px" closable
+              @close="handleCloseTag(user, index)">{{ user.userName }}
             </el-tag>
           </el-card>
         </el-col>
@@ -157,15 +143,36 @@ const queryParams = ref<Record<string, any>>({
   nickName: '',
   taskId: ''
 });
-
 /** 查询用户列表 */
 const getAddMultiInstanceList = async (taskId: string, userIdList: Array<number | string>) => {
   deptOptions.value = [];
+  getTreeSelect();
   multiInstance.value = 'add';
   userIds.value = userIdList;
-  getTreeSelect();
   visible.value = true;
   queryParams.value.taskId = taskId;
+  loading.value = true;
+  const res = await getWorkflowAddMultiListByPage(queryParams.value);
+  loading.value = false;
+  userList.value = res.rows;
+  total.value = res.total;
+  if (userList.value && userIds.value.length > 0) {
+    const data = await getUserListByIds(userIds.value);
+    if (data.data && data.data.length > 0) {
+      chooseUserList.value = data.data;
+      data.data.forEach((user: UserVO) => {
+        multipleTableRef.value!.toggleRowSelection(
+          userList.value.find((item) => {
+            return item.userId == user.userId;
+          }),
+          true
+        );
+      });
+    }
+  }
+};
+
+const getList = async () => {
   loading.value = true;
   const res = await getWorkflowAddMultiListByPage(queryParams.value);
   loading.value = false;
@@ -248,6 +255,7 @@ const getTreeSelect = async () => {
   const res = await deptTreeSelect();
   deptOptions.value = res.data;
 };
+
 /** 通过条件过滤节点  */
 const filterNode = (value: string, data: any) => {
   if (!value) return true;
@@ -267,7 +275,7 @@ watchEffect(
 /** 节点单击事件 */
 const handleNodeClick = (data: DeptVO) => {
   queryParams.value.deptId = data.id;
-  handleQuery();
+  getList();
 };
 //删除tag
 const handleCloseTag = (user: UserVO, index: any) => {
@@ -342,7 +350,9 @@ const submitFileForm = async () => {
     }
   }
 };
+//事件
 const emits = defineEmits(['submitCallback']);
+
 /**
  * 对外暴露子组件方法
  */
