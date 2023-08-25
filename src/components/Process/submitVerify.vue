@@ -87,7 +87,7 @@ const handleBackProcess = async () => {
 };
 
 /**
- * 对外暴露子组建方法
+ * 对外暴露子组件方法
  */
 defineExpose({
   openDialog

@@ -344,7 +344,7 @@ const submitFileForm = async () => {
 };
 const emits = defineEmits(['submitCallback']);
 /**
- * 对外暴露子组建方法
+ * 对外暴露子组件方法
  */
 defineExpose({
   getAddMultiInstanceList,
