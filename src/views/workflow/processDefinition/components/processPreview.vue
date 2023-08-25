@@ -1,36 +1,39 @@
 <template>
-  <el-dialog title="预览" v-model="visible" width="70%" append-to-body>
-    <div v-if="type==='png'" style="align:center">
-      <el-image :src="url[0]" v-if="type==='png'"> </el-image>
+  <el-dialog title="预览" v-model="data.visible" width="70%" append-to-body>
+    <div v-if="data.type === 'png'" style="align:center">
+      <el-image :src="data.url[0]" v-if="data.type === 'png'">
+        <div>流程图加载中 <i class="el-icon-loading"></i></div>
+      </el-image>
     </div>
-    <div class="xml-data" v-if="type==='xml'">
-      <div v-for="(xml,index) in url" :key="index">
-        <pre class="font">{{xml}}</pre>
+    <div class="xml-data" v-if="data.type === 'xml'">
+      <div v-for="(xml, index) in data.url" :key="index">
+        <pre class="font">{{ xml }}</pre>
       </div>
     </div>
+    <template #footer>
+      <span class="dialog-footer" v-if="data.type === 'xml'"> </span>
+    </template>
   </el-dialog>
 </template>
 
-<script>
-export default {
-  props: {
-    url: {
-      type: Array,
-      default: () => []
-    },
-    type: String
-  },
-  data() {
-    return {
-      visible: false
-    };
-  },
-  methods: {
-    init() {
-      this.visible = true;
-    }
-  }
-};
+<script setup>
+const data = reactive({
+    visible: false,
+    url: [],
+    type: ''
+})
+//打开
+function openDialog (url, type) {
+    data.visible = true
+    data.url = url
+    data.type = type
+}
+/**
+ * 对外暴露子组建方法
+ */
+defineExpose({
+    openDialog
+})
 </script>
 <style>
 .xml-data {

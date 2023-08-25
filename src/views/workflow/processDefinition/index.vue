@@ -214,7 +214,6 @@ const total = ref(0);
 const processDefinitionList = ref<Array<any>>([]);
 const processDefinitionHistoryList = ref<Array<any>>([]);
 const url = ref<Array<string>>([]);
-const type = ref<string>('');
 const categoryOptions = ref<CategoryOption[]>([]);
 const categoryName = ref('');
 const categoryTreeRef = ref(ElTree);
@@ -317,23 +316,26 @@ const getProcessDefinitionHitoryList = (id:string,key:string) => {
 
 //预览图片
 const clickPreviewImg = (id: string) => {
-  if (previewRef.value) {
-    url.value = [];
-    type.value = 'png';
-    url.value.push(processDefinitionImage(id));
-    previewRef.value.init();
-  }
+    loading.value = true;
+    processDefinitionImage(id).then((resp) => {
+        if (previewRef.value) {
+            url.value = [];
+            url.value.push('data:image/png;base64,' + resp.data);
+            loading.value = false;
+            previewRef.value.openDialog(url, 'png');
+        }
+    })
+
 };
 //预览xml
 const clickPreviewXML = (id: string) => {
   loading.value = true;
-  type.value = 'xml';
   processDefinitionXml(id).then((response) => {
     if (previewRef.value) {
-      url.value = [];
-      url.value = response.data.xml;
-      loading.value = false;
-      previewRef.value.init();
+        url.value = [];
+        url.value = response.data.xml;
+        loading.value = false;
+        previewRef.value.openDialog(url, 'xml');
     }
   });
 };

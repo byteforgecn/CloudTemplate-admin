@@ -30,14 +30,10 @@ export const getProcessDefinitionListByKey = (key: string) => {
  * 通过流程定义id获取流程图
  */
 export const processDefinitionImage = (processDefinitionId: string) => {
-  return (
-    baseUrl +
-    `/workflow/processDefinition/processDefinitionImage/${processDefinitionId}` +
-    '?Authorization=Bearer ' +
-    getToken() +
-    '&t' +
-    Math.random()
-  );
+  return request({
+    url: `/workflow/processDefinition/processDefinitionImage/${processDefinitionId}` + '?t' + Math.random(),
+    method: 'get'
+  });
 };
 
 /**
