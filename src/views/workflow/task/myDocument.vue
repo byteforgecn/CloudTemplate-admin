@@ -5,22 +5,14 @@
       <el-col :lg="4" :xs="24" style="">
         <el-card shadow="hover">
           <el-input placeholder="请输入流程分类名" v-model="categoryName" prefix-icon="Search" clearable />
-          <el-tree
-            class="mt-2"
-            ref="categoryTreeRef"
-            node-key="id"
-            :data="categoryOptions"
-            :props="{ label: 'categoryName', children: 'children' }"
-            :expand-on-click-node="false"
-            :filter-node-method="filterNode"
-            highlight-current
-            default-expand-all
-            @node-click="handleNodeClick"
-          ></el-tree>
+          <el-tree class="mt-2" ref="categoryTreeRef" node-key="id" :data="categoryOptions"
+            :props="{ label: 'categoryName', children: 'children' }" :expand-on-click-node="false"
+            :filter-node-method="filterNode" highlight-current default-expand-all @node-click="handleNodeClick"></el-tree>
         </el-card>
       </el-col>
       <el-col :lg="20" :xs="24">
-        <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
+        <transition :enter-active-class="proxy?.animate.searchAnimate.enter"
+          :leave-active-class="proxy?.animate.searchAnimate.leave">
           <div class="mb-[10px]" v-show="showSearch">
             <el-card shadow="hover">
               <el-form :model="queryParams" ref="queryFormRef" :inline="true" v-show="showSearch" label-width="120px">
@@ -59,43 +51,38 @@
             </el-table-column>
             <el-table-column align="center" prop="businessStatusName" label="流程状态" min-width="70">
               <template #default="scope">
-                <el-tag type="success">{{scope.row.businessStatusName}}</el-tag>
+                <el-tag type="success">{{ scope.row.businessStatusName }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column align="center" prop="startTime" label="启动时间" width="160"></el-table-column>
-            <el-table-column align="center" v-if="tab === 'finish'" prop="endTime" label="结束时间" width="160"></el-table-column>
+            <el-table-column align="center" v-if="tab === 'finish'" prop="endTime" label="结束时间"
+              width="160"></el-table-column>
             <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
               <template #default="scope">
                 <el-row :gutter="10" class="mb8">
                   <el-col :span="1.5">
-                    <el-button type="text" size="small" icon="el-icon-thumb" @click="handleApprovalRecord(scope.row)">审批记录</el-button>
+                    <el-button type="text" size="small" icon="Document"
+                      @click="handleApprovalRecord(scope.row)">审批记录</el-button>
                   </el-col>
-                  <el-col
-                    :span="1.5"
-                    v-if="scope.row.businessStatus === 'draft'||scope.row.businessStatus === 'cancel'||scope.row.businessStatus === 'back'"
-                  >
-                    <el-button type="text" size="small" icon="el-icon-thumb" @click="handleDelete(scope.row)">删除</el-button>
+                  <el-col :span="1.5"
+                    v-if="scope.row.businessStatus === 'draft' || scope.row.businessStatus === 'cancel' || scope.row.businessStatus === 'back'">
+                    <el-button type="text" size="small" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
                   </el-col>
                   <el-col :span="1.5" v-if="scope.row.businessStatus === 'waiting'">
-                    <el-button type="text" size="small" icon="el-icon-thumb" @click="handleCancelProcessApply(scope.row)">撤销</el-button>
+                    <el-button type="text" size="small" icon="Notification"
+                      @click="handleCancelProcessApply(scope.row)">撤销</el-button>
                   </el-col>
-                  <el-col
-                    :span="1.5"
-                    v-if="scope.row.businessStatus === 'draft'||scope.row.businessStatus === 'cancel'||scope.row.businessStatus === 'back'"
-                  >
-                    <el-button type="text" size="small" icon="el-icon-thumb" @click="submitVerifyOpen(scope.row.taskVoList[0].id)">提交</el-button>
+                  <el-col :span="1.5"
+                    v-if="scope.row.businessStatus === 'draft' || scope.row.businessStatus === 'cancel' || scope.row.businessStatus === 'back'">
+                    <el-button type="text" size="small" icon="Edit"
+                      @click="submitVerifyOpen(scope.row.taskVoList[0].id)">提交</el-button>
                   </el-col>
                 </el-row>
               </template>
             </el-table-column>
           </el-table>
-          <pagination
-            v-show="total > 0"
-            :total="total"
-            v-model:page="queryParams.pageNum"
-            v-model:limit="queryParams.pageSize"
-            @pagination="getList"
-          />
+          <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
+            v-model:limit="queryParams.pageSize" @pagination="getList" />
         </el-card>
       </el-col>
     </el-row>
@@ -252,7 +239,7 @@ const handleCancelProcessApply = async (row: any) => {
 //提交
 const submitVerifyOpen = async (id: string) => {
   if (submitVerifyRef.value) {
-    submitVerifyRef.value.openDialog(true,id);
+    submitVerifyRef.value.openDialog(true, id);
   }
 };
 </script>

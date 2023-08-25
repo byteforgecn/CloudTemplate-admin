@@ -101,8 +101,6 @@
 import { listLeave, getLeave, delLeave, addLeave, updateLeave } from '@/api/demo/leave';
 import { cancelProcessApply } from '@/api/workflow/processInstance';
 import { LeaveVO, LeaveQuery, LeaveForm } from '@/api/demo/leave/types';
-import { ComponentInternalInstance } from 'vue';
-import { ElForm } from 'element-plus';
 import { startWorkFlow } from '@/api/workflow/task';
 import SubmitVerify from '@/components/Process/submitVerify.vue';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
@@ -266,13 +264,13 @@ const handleExport = () => {
 
 //提交申请
 const handleStartWorkFlow = async (data: any) => {
-  submitFormData.value.processKey = 'test';
+  submitFormData.value.processKey = 'test2';
   submitFormData.value.businessKey = data.id;
   submitFormData.value.variables = {
     leaveDays: data.leaveDays,
     userList: [1]
   };
-  startWorkFlow(submitFormData.value).then((response) => {
+  startWorkFlow(submitFormData.value).then((response:any) => {
     if (submitVerifyRef.value) {
       submitVerifyRef.value.openDialog(true, response.data.taskId);
     }
@@ -285,7 +283,7 @@ const handleApprovalRecord = (id: string) => {
   }
 };
 //提交回调
-const submitCallback = async (data: any) => {
+const submitCallback = async () => {
   dialog.visible = false;
   handleQuery();
 };
