@@ -3,6 +3,7 @@ export interface FormVO extends BaseEntity {
   formName: string;
   formConfig: string;
   content: string;
+  status?: string;
   remark: string;
 }
 
@@ -11,6 +12,7 @@ export interface FormForm {
   formName: string;
   formConfig?: string;
   content?: string;
+  status?: string;
   remark: string;
 }
 

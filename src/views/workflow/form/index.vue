@@ -1,6 +1,7 @@
 <template>
   <div class="p-2">
-    <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
+    <transition :enter-active-class="proxy?.animate.searchAnimate.enter"
+      :leave-active-class="proxy?.animate.searchAnimate.leave">
       <div class="search" v-show="showSearch">
         <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="70">
           <el-form-item label="表单名称" prop="formName">
@@ -17,16 +18,20 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['workflow:form:add']">新增</el-button>
+            <el-button type="primary" plain icon="Plus" @click="handleAdd"
+              v-hasPermi="['workflow:form:add']">新增</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['workflow:form:edit']">修改</el-button>
+            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()"
+              v-hasPermi="['workflow:form:edit']">修改</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['workflow:form:remove']">删除</el-button>
+            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()"
+              v-hasPermi="['workflow:form:remove']">删除</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['workflow:form:export']">导出</el-button>
+            <el-button type="warning" plain icon="Download" @click="handleExport"
+              v-hasPermi="['workflow:form:export']">导出</el-button>
           </el-col>
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
@@ -36,22 +41,44 @@
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="表单主键" align="center" prop="formId" v-if="false" />
         <el-table-column label="表单名称" align="center" prop="formName" />
-        <el-table-column label="备注" align="center" prop="remark" />
+        <el-table-column label="状态" align="center" key="status">
+          <template #default="scope">
+            <el-switch v-model="scope.row.status" active-value="0" inactive-value="1"
+              @change="handleStatusChange(scope.row)"></el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="流程定义KEY" align="center" prop="wfFormDefinitionVo">
+          <template #default="scope">
+            <span v-if="scope.row.wfFormDefinitionVo">{{ scope.row.wfFormDefinitionVo.processDefinitionKey }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="流程定义名称" align="center" prop="wfFormDefinitionVo">
+          <template #default="scope">
+            <span v-if="scope.row.wfFormDefinitionVo">{{ scope.row.wfFormDefinitionVo.processDefinitionName }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-tooltip content="详情" placement="top">
-              <el-button link type="primary" icon="View" @click="handleDetail(scope.row)" v-hasPermi="['workflow:form:query']"></el-button>
+              <el-button link type="primary" icon="View" @click="handleDetail(scope.row)"
+                v-hasPermi="['workflow:form:query']"></el-button>
             </el-tooltip>
             <el-tooltip content="修改" placement="top">
-              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['workflow:form:edit']"></el-button>
+              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
+                v-hasPermi="['workflow:form:edit']"></el-button>
             </el-tooltip>
             <el-tooltip content="删除" placement="top">
-              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['workflow:form:remove']"></el-button>
+              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
+                v-hasPermi="['workflow:form:remove']"></el-button>
+            </el-tooltip>
+            <el-tooltip content="绑定流程" placement="top">
+              <el-button link type="primary" icon="Tickets" @click="handleProcess(scope.row)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
-      <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
+      <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
 
     <!-- 流程表单设计器对话框 -->
@@ -88,11 +115,44 @@
         </div>
       </template>
     </el-dialog>
+    <el-dialog v-if="processDefinitionDialog.visible" v-model="processDefinitionDialog.visible"
+      :title="processDefinitionDialog.title" width="70%">
+      <el-table v-loading="loading" :data="processDefinition.list">
+        <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
+        <el-table-column fixed align="center" prop="name" label="流程定义名称"></el-table-column>
+        <el-table-column align="center" prop="key" label="标识Key"></el-table-column>
+        <el-table-column align="center" prop="version" label="版本号" width="90">
+          <template #default="scope"> v{{ scope.row.version }}.0</template>
+        </el-table-column>
+        <el-table-column align="center" prop="suspensionState" label="状态" min-width="70">
+          <template #default="scope">
+            <el-tag type="success" v-if="scope.row.suspensionState == 1">激活</el-tag>
+            <el-tag type="danger" v-else>挂起</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="deploymentTime" label="部署时间"
+          :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column fixed="right" label="操作" align="center" width="200" class-name="small-padding fixed-width">
+          <template #default="scope">
+            <el-button link type="primary" size="small" @click="handleConfirm(scope.row)">确认绑定</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination v-show="processDefinition.total > 0" :total="processDefinition.total"
+        v-model:page="processQueryParams.pageNum" v-model:limit="processQueryParams.pageSize"
+        @pagination="getDefinitionList" />
+    </el-dialog>
   </div>
 </template>
 
 <script setup name="Form" lang="ts">
 import { listForm, addForm, updateForm, getForm, delForm } from "@/api/workflow/form";
+import {
+  listProcessDefinition
+} from '@/api/workflow/processDefinition';
+import {
+  addFormDefinition
+} from '@/api/workflow/formDefinition';
 import { FormForm, FormQuery, FormVO } from "@/api/workflow/form/types";
 import { ComponentInternalInstance } from "vue";
 
@@ -105,6 +165,14 @@ const ids = ref<Array<number | string>>([]);
 const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
+const formId = ref<number | string>();
+
+const processDefinition = reactive<any>({
+  list: [],
+  total: 0
+});
+
+
 
 const vfDesignerRef = ref(null);
 const vfRenderRef = ref(null);
@@ -115,6 +183,11 @@ const designer = reactive<DialogOption>({
   visible: false,
   title: ''
 })
+
+const processDefinitionDialog = reactive<DialogOption>({
+  visible: false,
+  title: '流程定义'
+});
 
 const designerConfig = reactive({
   externalLink: true,
@@ -142,11 +215,12 @@ const initFormData: FormForm = {
   formName: '',
   formConfig: '',
   content: '',
+  status: '1',
   remark: ''
 }
 
 const data = reactive<PageData<FormForm, FormQuery>>({
-  form: {...initFormData},
+  form: { ...initFormData },
   queryParams: {
     pageNum: 1,
     pageSize: 10,
@@ -158,6 +232,15 @@ const data = reactive<PageData<FormForm, FormQuery>>({
 });
 
 const { queryParams, form, rules } = toRefs<PageData<FormForm, FormQuery>>(data);
+
+// 查询参数
+const processQueryParams = ref<Record<string, any>>({
+  pageNum: 1,
+  pageSize: 10,
+  name: undefined,
+  key: undefined,
+  categoryCode: undefined
+});
 
 /** 查询岗位列表 */
 const getList = async () => {
@@ -174,7 +257,7 @@ const cancel = () => {
 }
 /** 表单重置 */
 const reset = () => {
-  form.value = {...initFormData};
+  form.value = { ...initFormData };
 }
 /** 搜索按钮操作 */
 const handleQuery = () => {
@@ -195,6 +278,7 @@ const handleSelectionChange = (selection: FormVO[]) => {
 /** 新增表单操作 */
 const handleAdd = () => {
   designer.visible = true;
+  getDefinitionList()
   nextTick(() => {
     reset();
     vfDesignerRef.value.clearDesigner();
@@ -203,6 +287,7 @@ const handleAdd = () => {
 /** 修改表单操作 */
 const handleUpdate = (row?: FormVO) => {
   designer.visible = true;
+  getDefinitionList()
   nextTick(async () => {
     const formId = row?.formId || ids.value[0];
     const res = await getForm(formId);
@@ -210,12 +295,26 @@ const handleUpdate = (row?: FormVO) => {
     vfDesignerRef.value.setFormJson(form.value.content);
   })
 }
+//修改状态
+const handleStatusChange = async (row: FormVO) => {
+  let text = row.status === "0" ? "启用" : "停用"
+  try {
+    form.value = row
+    form.value.status === "0" ? "1" : "0";
+    await proxy?.$modal.confirm('确认要' + text + '【' + row.formName + '】表单?');
+    await updateForm(row);
+    proxy?.$modal.msgSuccess(text + "成功");
+    getList()
+  } catch (err) {
+    row.status = row.status === "0" ? "1" : "0";
+  }
+}
 /** 查看表单操作 */
 const handleDetail = (row: FormVO) => {
   render.visible = true;
   render.title = '查看表单详情';
   nextTick(async () => {
-    vfRenderRef.value.setFormJson(row.content || {formConfig: {}, widgetList: []});
+    vfRenderRef.value.setFormJson(row.content || { formConfig: {}, widgetList: [] });
   });
 }
 
@@ -246,7 +345,35 @@ const submitForm = () => {
     getList();
   })
 }
+//获取流程定义
+const getDefinitionList = () => {
+  listProcessDefinition(processQueryParams.value).then(res => {
+    processDefinition.list = res.rows
+    processDefinition.total = res.total;
+    loading.value = false;
+  })
+}
+const handleProcess = async (row?: FormVO) => {
+  formId.value = row?.formId
+  processDefinitionDialog.visible = true
+  getDefinitionList()
+}
+//绑定流程
 
+const handleConfirm = async (row?: any) => {
+  await proxy?.$modal.confirm('是否确认绑定【' + row.key + '】？');
+  let data = {
+    formId: formId.value,
+    processDefinitionKey: row.key,
+    processDefinitionName: row.name,
+    processDefinitionId: row.id,
+    processDefinitionVersion: row.version
+  }
+  await addFormDefinition(data);
+  processDefinitionDialog.visible = false
+  getList();
+  proxy?.$modal.msgSuccess("绑定成功");
+}
 onMounted(() => {
   getList();
 });
@@ -257,9 +384,11 @@ onMounted(() => {
   .main-container {
     margin: 0;
   }
+
   label {
     font-weight: normal;
   }
+
   :deep(.external-link) {
     display: flex;
     align-items: center;

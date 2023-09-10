@@ -109,3 +109,14 @@ export const migrationProcessDefinition = (currentProcessDefinitionId: string, f
     method: 'put'
   });
 };
+
+/**
+ * 查询流程定义列表
+ * @returns
+ */
+export const getProcessDefinitionList = () => {
+  return request({
+    url: `/workflow/processDefinition/getProcessDefinitionList`,
+    method: 'get'
+  });
+};
