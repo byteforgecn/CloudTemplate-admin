@@ -1,6 +1,7 @@
 <template>
   <div class="p-2">
-    <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
+    <transition :enter-active-class="proxy?.animate.searchAnimate.enter"
+      :leave-active-class="proxy?.animate.searchAnimate.leave">
       <div class="search" v-show="showSearch">
         <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
           <el-form-item label="标题" prop="title">
@@ -24,7 +25,8 @@
             <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['demo:leave:add']">新增</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['demo:leave:export']">导出</el-button>
+            <el-button type="warning" plain icon="Download" @click="handleExport"
+              v-hasPermi="['demo:leave:export']">导出</el-button>
           </el-col>
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
@@ -38,36 +40,35 @@
         <el-table-column label="备注" align="center" prop="remark" />
         <el-table-column align="center" prop="businessStatusName" label="流程状态" min-width="70">
           <template #default="scope">
-            <el-tag type="success">{{scope.row.processInstanceVo.businessStatusName}}</el-tag>
+            <el-tag type="success">{{ scope.row.processInstanceVo.businessStatusName }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
-            <el-tooltip
-              content="修改"
-              placement="top"
-              v-if="scope.row.processInstanceVo.businessStatus === 'draft'||scope.row.processInstanceVo.businessStatus === 'cancel'||scope.row.processInstanceVo.businessStatus === 'back'"
-            >
-              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['demo:leave:edit']"></el-button>
+            <el-tooltip content="修改" placement="top"
+              v-if="scope.row.processInstanceVo.businessStatus === 'draft' || scope.row.processInstanceVo.businessStatus === 'cancel' || scope.row.processInstanceVo.businessStatus === 'back'">
+              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
+                v-hasPermi="['demo:leave:edit']"></el-button>
             </el-tooltip>
-            <el-tooltip
-              content="删除"
-              placement="top"
-              v-if="scope.row.processInstanceVo.businessStatus === 'draft'||scope.row.processInstanceVo.businessStatus === 'cancel'||scope.row.processInstanceVo.businessStatus === 'back'"
-            >
-              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['demo:leave:remove']"></el-button>
+            <el-tooltip content="删除" placement="top"
+              v-if="scope.row.processInstanceVo.businessStatus === 'draft' || scope.row.processInstanceVo.businessStatus === 'cancel' || scope.row.processInstanceVo.businessStatus === 'back'">
+              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
+                v-hasPermi="['demo:leave:remove']"></el-button>
             </el-tooltip>
             <el-tooltip content="撤销" placement="top" v-if="scope.row.processInstanceVo.businessStatus === 'waiting'">
-              <el-button link type="primary" icon="Promotion" @click="handleCancelProcessApply(scope.row.processInstanceVo.id)"></el-button>
+              <el-button link type="primary" icon="Promotion"
+                @click="handleCancelProcessApply(scope.row.processInstanceVo.id)"></el-button>
             </el-tooltip>
             <el-tooltip content="审批记录" placement="top" v-if="scope.row.processInstanceVo.businessStatus === 'waiting'">
-              <el-button link type="primary" icon="Document" @click="handleApprovalRecord(scope.row.processInstanceVo.id)"></el-button>
+              <el-button link type="primary" icon="Document"
+                @click="handleApprovalRecord(scope.row.processInstanceVo.id)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
 
-      <pagination v-show="total>0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
+      <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
     <!-- 添加或修改请假对话框 -->
     <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>
@@ -117,7 +118,7 @@ const multiple = ref(true);
 const total = ref(0);
 //提交组件
 const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
-  //审批记录组件
+//审批记录组件
 const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 
 const queryFormRef = ref(ElForm);
@@ -270,9 +271,9 @@ const handleStartWorkFlow = async (data: any) => {
     leaveDays: data.leaveDays,
     userList: [1]
   };
-  startWorkFlow(submitFormData.value).then((response:any) => {
+  startWorkFlow(submitFormData.value).then((response: any) => {
     if (submitVerifyRef.value) {
-      submitVerifyRef.value.openDialog(true, response.data.taskId);
+      submitVerifyRef.value.openDialog(response.data.taskId);
     }
   });
 };

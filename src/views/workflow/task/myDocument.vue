@@ -239,7 +239,7 @@ const handleCancelProcessApply = async (row: any) => {
 //提交
 const submitVerifyOpen = async (id: string) => {
   if (submitVerifyRef.value) {
-    submitVerifyRef.value.openDialog(true, id);
+    submitVerifyRef.value.openDialog(id);
   }
 };
 </script>

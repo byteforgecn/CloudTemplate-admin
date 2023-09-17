@@ -11,6 +11,15 @@ export function listForm(query: FormQuery): AxiosPromise<FormVO[]> {
   });
 }
 
+// 查询流程表单列表
+export function queryList(query: any): AxiosPromise<FormVO[]> {
+  return request({
+    url: '/workflow/form/queryList',
+    method: 'get',
+    params: query
+  });
+}
+
 // 查询流程表单详细
 export function getForm(formId: string | number): AxiosPromise<FormVO> {
   return request({

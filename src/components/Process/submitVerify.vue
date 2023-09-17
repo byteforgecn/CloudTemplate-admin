@@ -14,9 +14,11 @@
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="dialog.visible = false">取消</el-button>
-        <el-button type="primary" @click="handleCompleteTask"> 提交 </el-button>
-        <el-button type="danger" @click="handleBackProcess" v-if="businessStatus === 'waiting'"> 退回 </el-button>
+        <el-button @click="cancel" v-loading="buttonLoading">取消</el-button>
+        <el-button type="primary" v-loading="buttonLoading" @click="handleCompleteTask"> 提交 </el-button>
+        <el-button type="danger" v-loading="buttonLoading" @click="handleBackProcess" v-if="businessStatus === 'waiting'">
+          退回
+        </el-button>
       </span>
     </template>
   </el-dialog>
@@ -31,6 +33,8 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 //遮罩层
 const loading = ref(true);
+//按钮
+const buttonLoading = ref(true);
 //流程状态
 const businessStatus = ref<string>('');
 //任务id
@@ -48,27 +52,30 @@ const form = ref<Record<string, any>>({
   messageType: ['1']
 });
 //打开弹窗
-const openDialog = (visible?: any,id?: string) => {
+const openDialog = (id?: string) => {
   taskId.value = id
   form.value.message = undefined;
-  dialog.visible = visible;
+  dialog.visible = true;
   loading.value = true;
+  buttonLoading.value = true;
   nextTick(() => {
     getBusinessStatus(taskId.value).then((response) => {
       businessStatus.value = response.data;
       loading.value = false;
+      buttonLoading.value = false;
     });
   });
 };
 
-onMounted(() => {});
-const emits = defineEmits(['submitCallback']);
+onMounted(() => { });
+const emits = defineEmits(['submitCallback', 'cancelCallback']);
 
 /** 办理流程 */
 const handleCompleteTask = async () => {
   form.value.taskId = taskId.value;
   await proxy?.$modal.confirm('是否确认提交？');
   loading.value = true
+  buttonLoading.value = true
   await completeTask(form.value).finally(() => (loading.value = false));
   dialog.visible = false;
   emits('submitCallback');
@@ -80,12 +87,18 @@ const handleBackProcess = async () => {
   form.value.taskId = taskId.value;
   await proxy?.$modal.confirm('是否确认驳回到申请人？');
   loading.value = true
+  buttonLoading.value = true
   await backProcess(form.value).finally(() => (loading.value = false));
   dialog.visible = false;
   emits('submitCallback');
   proxy?.$modal.msgSuccess('操作成功');
 };
-
+//取消
+const cancel = async () => {
+  dialog.visible = false
+  buttonLoading.value = false
+  emits('cancelCallback');
+}
 /**
  * 对外暴露子组件方法
  */
